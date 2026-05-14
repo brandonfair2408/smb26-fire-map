@@ -422,6 +422,311 @@
       body.print-map #printCardPage { display: grid !important; }
       body.print-map #printDetails { display: none !important; }
     }
+
+    /* Persistent card preview mode. Print Card now opens this screen and leaves it up. */
+    #printPreviewToolbar { display: none; }
+    body.card-preview { overflow: hidden !important; background: #fff !important; color: #111 !important; }
+    body.card-preview #app { display: none !important; }
+    body.card-preview #printCardPage {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      grid-template-rows: auto auto minmax(0, 1fr);
+      gap: 12px;
+      width: 100vw;
+      height: 100vh;
+      padding: 18px;
+      background: #fff;
+      color: #111;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    body.card-preview #printPreviewToolbar {
+      display: flex !important;
+      grid-column: 1 / -1;
+      justify-content: flex-end;
+      gap: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #bbb;
+    }
+    body.card-preview #printPreviewToolbar button {
+      color: #111;
+      background: #f3f3f3;
+      border: 1px solid #111;
+      box-shadow: none;
+    }
+    body.card-preview #printPreviewToolbar button.primary { background: #dfe8c2; }
+    body.card-preview #printCardHeader {
+      grid-column: 1 / -1;
+      border-bottom: 2px solid #111;
+      padding-bottom: 8px;
+    }
+    body.card-preview #printCardMap {
+      min-height: 0;
+      height: 100%;
+      width: 100%;
+      border: 2px solid #111;
+      background: #ddd;
+      overflow: hidden;
+    }
+    body.card-preview #printCardDetails {
+      border: 2px solid #111;
+      padding: 12px;
+      font: 12px/1.35 Arial, Helvetica, sans-serif;
+      overflow: auto;
+    }
+    body.card-preview #printCardPage .leaflet-marker-icon,
+    body.card-preview #printCardPage .leaflet-marker-shadow { display: none !important; }
+    body.card-preview #printCardPage .target-label {
+      display: block !important;
+      background: rgba(255,255,255,.94) !important;
+      color: #111 !important;
+      border: 1px solid #111 !important;
+      border-radius: 999px !important;
+      padding: 3px 8px !important;
+      font-weight: 800 !important;
+      font-size: 11px !important;
+      letter-spacing: .03em !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,.28) !important;
+    }
+    body.card-preview #printCardPage .target-label.round-ir {
+      background: rgba(17,17,17,.94) !important;
+      color: #fff !important;
+      border-color: #fff !important;
+    }
+
+    @media print {
+      @page { size: landscape; margin: 0.35in; }
+      body.card-preview { background: #fff !important; color: #111 !important; }
+      body.card-preview #app { display: none !important; }
+      body.card-preview #printPreviewToolbar { display: none !important; }
+      body.card-preview #printCardPage {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) 3.65in !important;
+        grid-template-rows: auto 1fr !important;
+        gap: 0.12in !important;
+        width: auto !important;
+        height: 7.25in !important;
+        padding: 0 !important;
+        background: #fff !important;
+        color: #111 !important;
+      }
+      body.card-preview #printCardHeader { grid-column: 1 / -1 !important; border-bottom: 2px solid #111 !important; padding-bottom: 0.08in !important; }
+      body.card-preview #printCardHeader h1 { font-size: 18px !important; margin: 0 !important; }
+      body.card-preview #printCardHeader p { font-size: 10px !important; margin: 3px 0 0 !important; }
+      body.card-preview #printCardMap { height: 6.55in !important; width: 100% !important; border: 2px solid #111 !important; }
+      body.card-preview #printCardDetails { border: 2px solid #111 !important; padding: 0.1in !important; font: 10px/1.3 Arial, sans-serif !important; overflow: hidden !important; }
+      body.card-preview #printCardDetails h2 { font-size: 13px !important; margin: 0 0 0.06in !important; }
+      body.card-preview #printCardDetails p { margin: 2px 0 !important; }
+      body.card-preview #printCardPage .leaflet-marker-icon,
+      body.card-preview #printCardPage .leaflet-marker-shadow { display: none !important; }
+      body.card-preview #printCardPage .target-label { display: block !important; }
+    }
+
+
+
+    /* v10 generated fire mission card preview/print. This uses a vector schematic instead of map tiles so Android print/PDF does not crop the map. */
+    body.card-preview { overflow: auto !important; background: #d9d9d9 !important; color: #111 !important; }
+    body.card-preview #app { display: none !important; }
+    body.card-preview #printCardPage {
+      display: block !important;
+      width: min(1100px, calc(100vw - 24px));
+      margin: 12px auto;
+      padding-bottom: 20px;
+      color: #111;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    body.card-preview #printPreviewToolbar {
+      display: flex !important;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-bottom: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 8px;
+      background: rgba(217,217,217,.92);
+      backdrop-filter: blur(5px);
+    }
+    body.card-preview #printPreviewToolbar button {
+      color: #111;
+      background: #f4f4f4;
+      border: 1px solid #111;
+      box-shadow: none;
+    }
+    body.card-preview #printPreviewToolbar button.primary { background: #dfe8c2; }
+    .fire-card-page {
+      background: #fff;
+      color: #111;
+      border: 1px solid #111;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      margin: 0 auto 18px;
+      padding: 18px;
+      min-height: 7.5in;
+      page-break-after: always;
+    }
+    .fire-card-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      border-bottom: 2px solid #111;
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+    }
+    .fire-card-header h1 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: .1em;
+    }
+    .fire-card-header p {
+      margin: 4px 0 0;
+      font-size: 12px;
+    }
+    .fire-card-auth-mini {
+      border: 2px solid #111;
+      padding: 7px 10px;
+      font-weight: 800;
+      letter-spacing: .06em;
+      white-space: nowrap;
+      font-size: 13px;
+    }
+    .field-schematic {
+      height: 6.3in;
+      border: 2px solid #111;
+      background: #f5f4ee;
+      overflow: hidden;
+    }
+    .field-schematic svg { width: 100%; height: 100%; display: block; }
+    .map-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 11px;
+      margin-top: 8px;
+      align-items: center;
+    }
+    .map-legend b {
+      display: inline-block;
+      width: 18px;
+      height: 10px;
+      border: 1px solid #111;
+      vertical-align: -1px;
+      margin-right: 4px;
+    }
+    .legend-field { background: rgba(143,191,114,.25); border-color: #3b803f !important; }
+    .legend-bb { background: rgba(217,104,82,.45); border-color: #9f2f22 !important; }
+    .legend-vis { background: #fff; border-color: #111 !important; }
+    .legend-ir { background: #111; border-color: #111 !important; }
+    .legend-nofire { background: rgba(214,173,85,.38); border-color: #b48621 !important; }
+    #missionDataPage h1 {
+      margin: 0 0 4px;
+      font-size: 24px;
+      letter-spacing: .1em;
+      border-bottom: 2px solid #111;
+      padding-bottom: 8px;
+    }
+    .mission-card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .mission-box {
+      border: 2px solid #111;
+      padding: 12px;
+      min-height: 1.3in;
+    }
+    .mission-box.full { grid-column: 1 / -1; }
+    .mission-box h2 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      letter-spacing: .05em;
+    }
+    .mission-box p {
+      margin: 6px 0;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .mission-line {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      gap: 8px;
+      margin: 8px 0;
+      font-size: 14px;
+      align-items: end;
+    }
+    .blank-line {
+      border-bottom: 1.8px solid #111;
+      min-height: 21px;
+    }
+    .checkbox-row {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin: 8px 0;
+      font-size: 15px;
+      align-items: center;
+    }
+    .box-symbol {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #111;
+      vertical-align: -2px;
+      margin-right: 4px;
+    }
+    .call-example {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      border: 1px dashed #111;
+      padding: 9px;
+      background: #f7f7f7;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .target-key-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    .target-key-table th,
+    .target-key-table td {
+      border: 1px solid #111;
+      padding: 5px;
+      text-align: left;
+    }
+
+    @media print {
+      @page { size: letter landscape; margin: 0.3in; }
+      html, body { background: #fff !important; height: auto !important; overflow: visible !important; }
+      body.card-preview #app,
+      body.card-preview #printPreviewToolbar { display: none !important; }
+      body.card-preview #printCardPage {
+        display: block !important;
+        width: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+      }
+      body.card-preview .fire-card-page {
+        box-shadow: none !important;
+        border: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 10.4in !important;
+        height: 7.9in !important;
+        min-height: 0 !important;
+        page-break-after: always !important;
+        break-after: page !important;
+      }
+      body.card-preview .fire-card-header { margin-bottom: 0.1in !important; }
+      body.card-preview .field-schematic { height: 6.65in !important; }
+      body.card-preview .mission-card-grid { gap: 0.1in !important; }
+      body.card-preview .mission-box { padding: 0.09in !important; }
+      body.card-preview .mission-box p { font-size: 11px !important; margin: 4px 0 !important; }
+      body.card-preview .checkbox-row { font-size: 13px !important; gap: 0.16in !important; }
+      body.card-preview .call-example { font-size: 10px !important; }
+      body.card-preview .target-key-table { font-size: 10px !important; }
+    }
   </style>
 </head>
 <body>
@@ -436,7 +741,7 @@
         <button id="gpsBtn" class="primary small">Set Launch GPS</button>
         <button id="fullMapBtn" class="small">Full Map</button>
         <button id="baseMapBtn" class="small">Satellite</button>
-        <button id="printMapBtn" class="small">Print Card</button>
+        <button id="printMapBtn" class="small">Card Preview</button>
         <button id="saveBtn" class="small">Save</button>
         <button id="exportBtn" class="small">CSV</button>
       </div>
@@ -554,12 +859,30 @@
   </div>
 
   <section id="printCardPage" aria-hidden="true">
-    <div id="printCardHeader">
-      <h1>SBM-26 FIRE MISSION CARD</h1>
-      <p>Target area map for staff review and event use. Map aid only. Staff final approval required.</p>
+    <div id="printPreviewToolbar">
+      <button id="printNowBtn" class="primary small">Print / Save PDF</button>
+      <button id="exitPreviewBtn" class="small">Back to App</button>
     </div>
-    <div id="printCardMap"></div>
-    <aside id="printCardDetails"></aside>
+
+    <article id="fireMapPage" class="fire-card-page">
+      <header class="fire-card-header">
+        <div>
+          <h1>FIRE MISSION CARD</h1>
+          <p>Field target map. Staff approval required before mission execution.</p>
+        </div>
+        <div class="fire-card-auth-mini" id="mapAuthMini" style="display:none;"></div>
+      </header>
+      <div id="fieldSchematic" class="field-schematic"></div>
+      <div class="map-legend">
+        <span><b class="legend-field"></b> Field boundary</span>
+        <span><b class="legend-bb"></b> BB / target area</span>
+        <span><b class="legend-vis"></b> VIS-ILLUM</span>
+        <span><b class="legend-ir"></b> IR-ILLUM</span>
+        <span><b class="legend-nofire"></b> No-fire zone</span>
+      </div>
+    </article>
+
+    <article id="missionDataPage" class="fire-card-page"></article>
   </section>
 
   <script
@@ -569,7 +892,7 @@
   ></script>
 
   <script>
-    const STORAGE_KEY = "sbm26_fire_map_v4";
+    const STORAGE_KEY = "sbm26_fire_map_v12";
 
     const state = {
       tool: "launcher",
@@ -600,6 +923,8 @@
       fullMapBtn: document.getElementById("fullMapBtn"),
       baseMapBtn: document.getElementById("baseMapBtn"),
       printMapBtn: document.getElementById("printMapBtn"),
+      printNowBtn: document.getElementById("printNowBtn"),
+      exitPreviewBtn: document.getElementById("exitPreviewBtn"),
       saveBtn: document.getElementById("saveBtn"),
       exportBtn: document.getElementById("exportBtn"),
       toolLauncher: document.getElementById("toolLauncher"),
@@ -637,7 +962,10 @@
       printDetails: document.getElementById("printDetails"),
       printCardPage: document.getElementById("printCardPage"),
       printCardMap: document.getElementById("printCardMap"),
-      printCardDetails: document.getElementById("printCardDetails")
+      printCardDetails: document.getElementById("printCardDetails"),
+      fieldSchematic: document.getElementById("fieldSchematic"),
+      missionDataPage: document.getElementById("missionDataPage"),
+      mapAuthMini: document.getElementById("mapAuthMini")
     };
 
     const launcherIcon = L.divIcon({ className: "", html: "<div class='crosshair'></div>", iconSize: [24, 24], iconAnchor: [12, 12] });
@@ -1106,162 +1434,278 @@
     }
 
     function updatePrintDetails() {
-      const details = buildPrintDetails();
-      els.printDetails.innerHTML = details;
-      els.printCardDetails.innerHTML = details;
+      if (els.mapAuthMini) els.mapAuthMini.textContent = "";
+      els.fieldSchematic.innerHTML = buildFieldSchematicSvg();
+      els.missionDataPage.innerHTML = buildMissionDataCard();
+      els.printDetails.innerHTML = "";
     }
 
-    function getRoundMapStyle(roundType) {
-      const cls = getRoundClass(roundType);
-      if (cls === "round-vis") return { color: "#111111", fillColor: "#f4f1e8" };
-      if (cls === "round-ir") return { color: "#f4f1e8", fillColor: "#111111" };
-      if (cls === "round-leaflet") return { color: "#0f4f22", fillColor: "#43b05c" };
-      if (cls === "round-training") return { color: "#101418", fillColor: "#9aa1a8" };
-      return { color: "#9f2f22", fillColor: "#d96852" };
+    function showCardPreview() {
+      updatePrintDetails();
+      document.body.classList.remove("print-map");
+      document.body.classList.add("card-preview");
+      els.printCardPage.setAttribute("aria-hidden", "false");
+      buildPrintCardMap();
+      setTimeout(() => {
+        if (printMapInstance) printMapInstance.invalidateSize({ animate: false, pan: false });
+      }, 250);
+      setTimeout(() => {
+        if (printMapInstance) printMapInstance.invalidateSize({ animate: false, pan: false });
+      }, 800);
     }
 
-    function makePrintTileLayer() {
-      if (activeBaseLayer === "satellite") {
-        return L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-          maxZoom: 19,
-          attribution: "Tiles &copy; Esri"
-        });
-      }
-      return L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 20,
-        attribution: "&copy; OpenStreetMap contributors"
-      });
-    }
-
-    function buildPrintCardMap() {
+    function exitCardPreview() {
+      document.body.classList.remove("card-preview");
+      els.printCardPage.setAttribute("aria-hidden", "true");
       if (printMapInstance) {
         printMapInstance.remove();
         printMapInstance = null;
       }
-      els.printCardMap.innerHTML = "";
-
-      printMapInstance = L.map("printCardMap", {
-        zoomControl: false,
-        dragging: false,
-        touchZoom: false,
-        scrollWheelZoom: false,
-        doubleClickZoom: false,
-        boxZoom: false,
-        keyboard: false,
-        preferCanvas: true
-      });
-
-      printBaseLayer = makePrintTileLayer().addTo(printMapInstance);
-      const bounds = L.latLngBounds([]);
-      let hasBounds = false;
-
-      function extendBounds(layerOrLatLng) {
-        try {
-          if (layerOrLatLng.getBounds) bounds.extend(layerOrLatLng.getBounds());
-          else bounds.extend(layerOrLatLng);
-          hasBounds = true;
-        } catch (err) {}
-      }
-
-      if (state.fieldAreaClosed && state.fieldArea.length >= 3) {
-        const latlngs = state.fieldArea.map(p => [p.lat, p.lng]);
-        const poly = L.polygon(latlngs, { color: "#4f9b4f", fillColor: "#8fbf72", fillOpacity: 0.08, weight: 3 }).addTo(printMapInstance);
-        extendBounds(poly);
-      }
-
-      for (const zone of state.noFireZones) {
-        const circle = L.circle([zone.lat, zone.lng], {
-          radius: zone.radius,
-          color: "#b48621",
-          fillColor: "#d6ad55",
-          fillOpacity: 0.16,
-          weight: 2,
-          dashArray: "8 7"
-        }).addTo(printMapInstance);
-        extendBounds(circle);
-      }
-
-      for (const target of state.targets) {
-        const style = getRoundMapStyle(target.roundType);
-        const circle = L.circle([target.lat, target.lng], {
-          radius: target.radius,
-          color: style.color,
-          fillColor: style.fillColor,
-          fillOpacity: 0.22,
-          weight: 3
-        }).addTo(printMapInstance);
-        extendBounds(circle);
-        L.tooltip({
-          permanent: true,
-          direction: "center",
-          opacity: 1,
-          className: `target-label ${getRoundClass(target.roundType)}`
-        }).setLatLng([target.lat, target.lng]).setContent(escapeHtml(target.name)).addTo(printMapInstance);
-      }
-
-      if (hasBounds && bounds.isValid()) {
-        printMapInstance.fitBounds(bounds, { padding: [35, 35], maxZoom: 18 });
-      } else {
-        printMapInstance.setView(map.getCenter(), map.getZoom());
-      }
-
-      setTimeout(() => printMapInstance.invalidateSize({ animate: false, pan: false }), 100);
-      setTimeout(() => printMapInstance.invalidateSize({ animate: false, pan: false }), 500);
-    }
-
-    function toggleBaseMap() {
-      const nextLayer = activeBaseLayer === "street" ? "satellite" : "street";
-      map.removeLayer(baseLayers[activeBaseLayer]);
-      baseLayers[nextLayer].addTo(map);
-      activeBaseLayer = nextLayer;
-      els.baseMapBtn.textContent = activeBaseLayer === "street" ? "Satellite" : "Street";
-      showToast(activeBaseLayer === "street" ? "Street map enabled" : "Satellite map enabled");
-      refreshMapSize(false);
-    }
-
-    function setMapOnly(active, requestBrowserFullscreen = false) {
-      document.body.classList.toggle("map-only", active);
-      els.fullMapBtn.textContent = active ? "Exit Map" : "Full Map";
-
-      if (active && requestBrowserFullscreen && !document.fullscreenElement && document.getElementById("app").requestFullscreen) {
-        document.getElementById("app").requestFullscreen().catch(() => {});
-      }
-      if (!active && document.fullscreenElement && document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {});
-      }
-
       refreshMapSize(true);
-      setTimeout(() => refreshMapSize(true), 250);
     }
 
-    function toggleFullMap() {
-      setMapOnly(!document.body.classList.contains("map-only"), true);
+    function printCardNow() {
+      if (!document.body.classList.contains("card-preview")) showCardPreview();
+      updatePrintDetails();
+      if (printMapInstance) printMapInstance.invalidateSize({ animate: false, pan: false });
+      setTimeout(() => window.print(), 350);
     }
 
     function printMap() {
-      updatePrintDetails();
-      document.body.classList.add("print-map");
-      els.printMapBtn.textContent = "Preparing...";
-      buildPrintCardMap();
+      showCardPreview();
+    }
 
-      const restoreAfterPrint = () => {
-        document.body.classList.remove("print-map");
-        els.printMapBtn.textContent = "Print Card";
-        if (printMapInstance) {
-          printMapInstance.remove();
-          printMapInstance = null;
+    // v10 card generator: printable two-page card using SVG geometry instead of map tiles.
+    function makeAuthCode() {
+      const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+      const bytes = new Uint8Array(5);
+      if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(bytes);
+      else for (let i = 0; i < bytes.length; i++) bytes[i] = Math.floor(Math.random() * 256);
+      let out = "FM-";
+      for (const b of bytes) out += chars[b % chars.length];
+      return out;
+    }
+
+    function ensureAuthCode() {
+      const target = getActiveTarget();
+      if (target) {
+        if (!target.authCode) {
+          target.authCode = makeAuthCode();
+          els.authCode.value = target.authCode;
+          saveState();
         }
-        refreshMapSize(true);
-      };
+        return target.authCode;
+      }
+      if (!state.cardAuthCode) state.cardAuthCode = makeAuthCode();
+      return state.cardAuthCode;
+    }
 
-      window.addEventListener("afterprint", restoreAfterPrint, { once: true });
-      setTimeout(() => {
-        if (printMapInstance) printMapInstance.invalidateSize({ animate: false, pan: false });
-        window.print();
-        setTimeout(() => {
-          if (document.body.classList.contains("print-map")) restoreAfterPrint();
-        }, 3000);
-      }, 1100);
+    function abbreviateTargetId(name, index) {
+      const raw = String(name || "").trim().toUpperCase();
+      const nato = { ALPHA: "A", BRAVO: "B", CHARLIE: "C", DELTA: "D", ECHO: "E", FOXTROT: "F", GOLF: "G", HOTEL: "H" };
+      const natoMatch = raw.match(/^(ALPHA|BRAVO|CHARLIE|DELTA|ECHO|FOXTROT|GOLF|HOTEL)[\s_-]*(\d+)/);
+      if (natoMatch) return `${nato[natoMatch[1]]}${natoMatch[2]}`;
+      const simple = raw.match(/^([A-Z])[A-Z]*[\s_-]*(\d+)/);
+      if (simple) return `${simple[1]}${simple[2]}`;
+      return `T${index + 1}`;
+    }
+
+    function getMetricProjector() {
+      const pts = [];
+      for (const p of state.fieldArea) pts.push(p);
+      for (const t of state.targets) pts.push({ lat: t.lat, lng: t.lng });
+      for (const z of state.noFireZones) pts.push({ lat: z.lat, lng: z.lng });
+      if (!pts.length) pts.push({ lat: map.getCenter().lat, lng: map.getCenter().lng });
+      const lat0 = pts.reduce((s, p) => s + p.lat, 0) / pts.length;
+      const lng0 = pts.reduce((s, p) => s + p.lng, 0) / pts.length;
+      const latM = 110540;
+      const lngM = 111320 * Math.cos(toRad(lat0));
+      return {
+        toXY(p) { return { x: (p.lng - lng0) * lngM, y: -(p.lat - lat0) * latM }; },
+        lat0,
+        lng0
+      };
+    }
+
+    function buildFieldSchematicSvg() {
+      const projector = getMetricProjector();
+      const elements = [];
+      const bounds = [];
+      const addB = (x, y) => bounds.push({ x, y });
+
+      function targetStyle(t) {
+        const cls = getRoundClass(t.roundType);
+        if (cls === "round-vis") return { stroke: "#111", fill: "rgba(255,255,255,.55)", textBg: "#fff", text: "#111" };
+        if (cls === "round-ir") return { stroke: "#111", fill: "rgba(20,20,20,.35)", textBg: "#111", text: "#fff" };
+        if (cls === "round-leaflet") return { stroke: "#0f4f22", fill: "rgba(67,176,92,.28)", textBg: "#eaffef", text: "#0f4f22" };
+        if (cls === "round-training") return { stroke: "#333", fill: "rgba(154,161,168,.3)", textBg: "#eee", text: "#111" };
+        return { stroke: "#9f2f22", fill: "rgba(217,104,82,.28)", textBg: "#fff", text: "#111" };
+      }
+
+      if (state.fieldAreaClosed && state.fieldArea.length >= 3) {
+        const pts = state.fieldArea.map(p => projector.toXY(p));
+        pts.forEach(p => addB(p.x, p.y));
+        elements.push({ type: "polygon", pts, stroke: "#2f7b35", fill: "rgba(143,191,114,.18)", width: 4 });
+      }
+
+      for (const z of state.noFireZones) {
+        const p = projector.toXY(z);
+        addB(p.x - z.radius, p.y - z.radius); addB(p.x + z.radius, p.y + z.radius);
+        elements.push({ type: "circle", x: p.x, y: p.y, r: z.radius, stroke: "#b48621", fill: "rgba(214,173,85,.2)", dash: "12 8", width: 3 });
+      }
+
+      state.targets.forEach((t, i) => {
+        const p = projector.toXY(t);
+        const r = t.radius || 25;
+        addB(p.x - r, p.y - r); addB(p.x + r, p.y + r);
+        const st = targetStyle(t);
+        elements.push({ type: "circle", x: p.x, y: p.y, r, stroke: st.stroke, fill: st.fill, width: 4 });
+        elements.push({ type: "label", x: p.x, y: p.y, text: abbreviateTargetId(t.name, i), bg: st.textBg, color: st.text });
+      });
+
+      if (!bounds.length) { addB(-50, -50); addB(50, 50); }
+      let minX = Math.min(...bounds.map(p => p.x));
+      let maxX = Math.max(...bounds.map(p => p.x));
+      let minY = Math.min(...bounds.map(p => p.y));
+      let maxY = Math.max(...bounds.map(p => p.y));
+      let w = Math.max(80, maxX - minX);
+      let h = Math.max(80, maxY - minY);
+      const pad = Math.max(30, Math.max(w, h) * 0.12);
+      minX -= pad; maxX += pad; minY -= pad; maxY += pad;
+      w = maxX - minX; h = maxY - minY;
+
+      const esc = escapeHtml;
+      const gridStep = chooseScaleStep(Math.max(w, h)) / 2;
+      let grid = "";
+      const xStart = Math.floor(minX / gridStep) * gridStep;
+      const yStart = Math.floor(minY / gridStep) * gridStep;
+      for (let x = xStart; x <= maxX; x += gridStep) grid += `<line x1="${x}" y1="${minY}" x2="${x}" y2="${maxY}" stroke="#ddd8c9" stroke-width="1"/>`;
+      for (let y = yStart; y <= maxY; y += gridStep) grid += `<line x1="${minX}" y1="${y}" x2="${maxX}" y2="${y}" stroke="#ddd8c9" stroke-width="1"/>`;
+
+      const drawn = elements.map(e => {
+        if (e.type === "polygon") return `<polygon points="${e.pts.map(p => `${p.x},${p.y}`).join(" ")}" fill="${e.fill}" stroke="${e.stroke}" stroke-width="${e.width}"/>`;
+        if (e.type === "circle") return `<circle cx="${e.x}" cy="${e.y}" r="${e.r}" fill="${e.fill}" stroke="${e.stroke}" stroke-width="${e.width}" stroke-dasharray="${e.dash || ""}"/>`;
+        if (e.type === "label") {
+          const boxW = Math.max(34, e.text.length * 12 + 16);
+          return `<g><rect x="${e.x - boxW/2}" y="${e.y - 14}" width="${boxW}" height="28" rx="8" fill="${e.bg}" stroke="#111" stroke-width="2"/><text x="${e.x}" y="${e.y + 5}" text-anchor="middle" font-family="Arial" font-size="18" font-weight="800" fill="${e.color}">${esc(e.text)}</text></g>`;
+        }
+        return "";
+      }).join("\n");
+
+      const scale = chooseScaleStep(Math.max(w, h));
+      const sx = minX + pad * 0.5;
+      const sy = maxY - pad * 0.45;
+      const northX = maxX - pad * 0.55;
+      const northY = minY + pad * 0.5;
+
+      return `
+        <svg viewBox="${minX} ${minY} ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+          <rect x="${minX}" y="${minY}" width="${w}" height="${h}" fill="#f5f4ee"/>
+          ${grid}
+          ${drawn || `<text x="${minX + w/2}" y="${minY + h/2}" text-anchor="middle" font-family="Arial" font-size="20" fill="#555">No targets drawn</text>`}
+          <g>
+            <line x1="${sx}" y1="${sy}" x2="${sx + scale}" y2="${sy}" stroke="#111" stroke-width="4"/>
+            <line x1="${sx}" y1="${sy - 8}" x2="${sx}" y2="${sy + 8}" stroke="#111" stroke-width="3"/>
+            <line x1="${sx + scale}" y1="${sy - 8}" x2="${sx + scale}" y2="${sy + 8}" stroke="#111" stroke-width="3"/>
+            <text x="${sx + scale/2}" y="${sy - 12}" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700">${scale} m</text>
+          </g>
+          <g>
+            <path d="M ${northX} ${northY - 28} L ${northX - 11} ${northY + 8} L ${northX} ${northY + 2} L ${northX + 11} ${northY + 8} Z" fill="#111"/>
+            <text x="${northX}" y="${northY + 29}" text-anchor="middle" font-family="Arial" font-size="14" font-weight="800">N</text>
+          </g>
+        </svg>`;
+    }
+
+    function chooseScaleStep(spanMeters) {
+      if (spanMeters <= 100) return 25;
+      if (spanMeters <= 250) return 50;
+      if (spanMeters <= 600) return 100;
+      if (spanMeters <= 1200) return 200;
+      if (spanMeters <= 2500) return 500;
+      return 1000;
+    }
+
+    function buildTargetKeyRows() {
+      if (!state.targets.length) return `<tr><td colspan="4">No targets placed.</td></tr>`;
+      return state.targets.map((t, i) => `
+        <tr>
+          <td><strong>${escapeHtml(abbreviateTargetId(t.name, i))}</strong></td>
+          <td>${escapeHtml(t.name)}</td>
+          <td>${escapeHtml(t.roundType)}</td>
+          <td>${Math.round(t.radius || 25)} m</td>
+        </tr>`).join("");
+    }
+
+    function buildMissionDataCard() {
+      const now = new Date().toLocaleString();
+      return `
+        <h1>FIRE MISSION CARD</h1>
+        <div class="mission-card-grid">
+          <section class="mission-box full">
+            <div class="mission-line"><strong>Auth code:</strong><span class="blank-line"></span></div>
+            <div class="mission-line"><strong>Callsign:</strong><span class="blank-line"></span></div>
+          </section>
+
+          <section class="mission-box">
+            <h2>Round Type</h2>
+            <div class="checkbox-row">
+              <span><span class="box-symbol"></span>BB-350</span>
+              <span><span class="box-symbol"></span>VIS-ILLUM</span>
+              <span><span class="box-symbol"></span>IR-ILLUM</span>
+            </div>
+          </section>
+
+          <section class="mission-box">
+            <h2>Round Count</h2>
+            <div class="checkbox-row">
+              <span><span class="box-symbol"></span>1</span>
+              <span><span class="box-symbol"></span>3</span>
+              <span><span class="box-symbol"></span>5</span>
+            </div>
+          </section>
+
+          <section class="mission-box full">
+            <h2>How To Call In A Fire Mission</h2>
+            <p>1. Contact the mortar team on the event radio channel.</p>
+            <p>2. Give your callsign, auth code, round type, and round count.</p>
+            <p>3. Wait for staff readback and approval. No approval means no mission.</p>
+            <p>4. Staff may deny, delay, or redirect the mission for safety or game balance.</p>
+            <div class="call-example">Example: â€œGravecaller, this is __________. Fire mission auth __________. BB-350. One round. Over.â€</div>
+            <p class="fine">Generated ${escapeHtml(now)}. Map aid only. Staff final approval required. Not a launch-setting calculator.</p>
+          </section>
+        </div>
+      `;
+    }
+
+    function updatePrintDetails() {
+      if (els.mapAuthMini) els.mapAuthMini.textContent = "";
+      els.fieldSchematic.innerHTML = buildFieldSchematicSvg();
+      els.missionDataPage.innerHTML = buildMissionDataCard();
+      els.printDetails.innerHTML = "";
+      if (els.printCardDetails) els.printCardDetails.innerHTML = "";
+    }
+
+    function showCardPreview() {
+      updatePrintDetails();
+      document.body.classList.remove("print-map");
+      document.body.classList.add("card-preview");
+      els.printCardPage.setAttribute("aria-hidden", "false");
+    }
+
+    function exitCardPreview() {
+      document.body.classList.remove("card-preview");
+      els.printCardPage.setAttribute("aria-hidden", "true");
+      refreshMapSize(true);
+    }
+
+    function printCardNow() {
+      if (!document.body.classList.contains("card-preview")) showCardPreview();
+      updatePrintDetails();
+      setTimeout(() => window.print(), 100);
+    }
+
+    function printMap() {
+      showCardPreview();
     }
 
     function renderAll() { renderMapObjects(); renderReadout(); renderLists(); renderFieldInfo(); renderRadioCall(); updatePrintDetails(); }
@@ -1425,6 +1869,8 @@
     els.fullMapBtn.onclick = toggleFullMap;
     els.baseMapBtn.onclick = toggleBaseMap;
     els.printMapBtn.onclick = printMap;
+    els.printNowBtn.onclick = printCardNow;
+    els.exitPreviewBtn.onclick = exitCardPreview;
     els.saveBtn.onclick = saveState;
     els.exportBtn.onclick = exportCSV;
     els.applyTargetBtn.onclick = updateActiveTargetFromForm;
