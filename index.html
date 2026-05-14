@@ -85,6 +85,36 @@
     #map { height: 100%; width: 100%; background: #202a1c; z-index: 1; }
     #printDetails { display: none; }
 
+    body.print-map header,
+    body.print-map #panel,
+    body.print-map .toolbox,
+    body.print-map .status-chip,
+    body.print-map .toast,
+    body.print-map .leaflet-control-zoom { display: none !important; }
+    body.print-map #app { grid-template-rows: 1fr !important; grid-template-columns: 1fr !important; background: #fff !important; }
+    body.print-map #mapWrap { grid-column: 1 / -1 !important; grid-row: 1 !important; height: 100vh !important; width: 100vw !important; border: 0 !important; }
+    body.print-map #printDetails {
+      display: block;
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      z-index: 10000;
+      width: min(390px, calc(100vw - 24px));
+      background: rgba(255,255,255,.92);
+      color: #111;
+      border: 1px solid #111;
+      border-radius: 10px;
+      padding: 10px;
+      font: 11px/1.35 Arial, sans-serif;
+      box-shadow: 0 4px 18px rgba(0,0,0,.25);
+    }
+    body.print-map #printDetails h1 { font-size: 14px; margin: 0 0 6px; letter-spacing: .04em; }
+    body.print-map #printDetails p { margin: 3px 0; }
+    body.print-map #printDetails .fine { font-size: 9px; margin-top: 7px; }
+    body.print-map .leaflet-marker-icon,
+    body.print-map .leaflet-marker-shadow { display: none !important; }
+    body.print-map .target-label { display: block !important; }
+
     body.map-only #app,
     body.print-map #app {
       grid-template-rows: auto 1fr;
@@ -181,6 +211,23 @@
     .target-pin.round-leaflet::after { background: #102516; }
     .target-pin.round-training { background: #9aa1a8; border-color: #101418; }
     .target-pin.round-training::after { background: #101418; }
+    .target-label {
+      background: rgba(255,255,255,.9);
+      color: #111;
+      border: 1px solid rgba(0,0,0,.75);
+      border-radius: 999px;
+      padding: 3px 7px;
+      font-weight: 800;
+      font-size: 11px;
+      letter-spacing: .03em;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+    .target-label::before { display: none; }
+    .target-label.round-bb { border-color: #d96852; }
+    .target-label.round-vis { border-color: #111; }
+    .target-label.round-ir { background: rgba(17,17,17,.92); color: #f4f1e8; border-color: #f4f1e8; }
+    .target-label.round-leaflet { border-color: #43b05c; }
+    .target-label.round-training { border-color: #9aa1a8; }
     .nofire-pin { width: 18px; height: 18px; border-radius: 4px; background: var(--warn); border: 2px solid #fff7de; box-shadow: 0 0 0 2px rgba(214,173,85,.35), 0 4px 14px rgba(0,0,0,.45); transform: rotate(45deg); }
 
     #panel { max-height: 52vh; min-height: 192px; overflow: auto; padding: 10px 10px calc(10px + var(--safe-area-bottom)); background: rgba(17,21,15,.96); border-top: 1px solid var(--line); box-shadow: 0 -16px 38px rgba(0,0,0,.38); z-index: 20; }
@@ -268,6 +315,9 @@
       }
       body.print-map #printDetails p { margin: 3px 0 !important; }
       body.print-map #printDetails .fine { font-size: 9px !important; margin-top: 7px !important; }
+      body.print-map .leaflet-marker-icon,
+      body.print-map .leaflet-marker-shadow { display: none !important; }
+      body.print-map .target-label { display: block !important; }
       body.print-map .leaflet-control-attribution {
         display: block !important;
         color: #111 !important;
@@ -287,7 +337,8 @@
         <button id="showMeBtn" class="small">Show Me</button>
         <button id="gpsBtn" class="primary small">Set Launch GPS</button>
         <button id="fullMapBtn" class="small">Full Map</button>
-        <button id="printMapBtn" class="small">Print Map</button>
+        <button id="baseMapBtn" class="small">Satellite</button>
+        <button id="printMapBtn" class="small">Print Card</button>
         <button id="saveBtn" class="small">Save</button>
         <button id="exportBtn" class="small">CSV</button>
       </div>
@@ -440,6 +491,7 @@
       showMeBtn: document.getElementById("showMeBtn"),
       gpsBtn: document.getElementById("gpsBtn"),
       fullMapBtn: document.getElementById("fullMapBtn"),
+      baseMapBtn: document.getElementById("baseMapBtn"),
       printMapBtn: document.getElementById("printMapBtn"),
       saveBtn: document.getElementById("saveBtn"),
       exportBtn: document.getElementById("exportBtn"),
@@ -502,10 +554,20 @@
 
     const map = L.map("map", { zoomControl: false, preferCanvas: true }).setView([38.25, -77.0], 13);
     L.control.zoom({ position: "bottomleft" }).addTo(map);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 20,
-      attribution: "&copy; OpenStreetMap contributors"
-    }).addTo(map);
+
+    const baseLayers = {
+      street: L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 20,
+        attribution: "&copy; OpenStreetMap contributors"
+      }),
+      satellite: L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+        maxZoom: 19,
+        attribution: "Tiles &copy; Esri"
+      })
+    };
+
+    let activeBaseLayer = "street";
+    baseLayers.street.addTo(map);
 
     function uid(prefix) { return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`; }
     function showToast(message) {
@@ -758,6 +820,13 @@
           marker.setIcon(getTargetIcon(target.roundType));
         }
         marker.bindPopup(`<b>${escapeHtml(target.name)}</b><br>${Math.round(target.radius)} m likely-hit radius`);
+        marker.bindTooltip(escapeHtml(target.name), {
+          permanent: true,
+          direction: "top",
+          offset: [0, -26],
+          opacity: 0.95,
+          className: `target-label ${getRoundClass(target.roundType)}`
+        });
         let circle = state.mapObjects.targetCircles.get(target.id);
         const isActive = target.id === state.activeTargetId;
         const circleOpts = { radius: target.radius, color: isActive ? "#d96852" : "#b07c66", fillColor: isActive ? "#d96852" : "#b07c66", fillOpacity: isActive ? 0.2 : 0.11, weight: isActive ? 2 : 1, dashArray: isActive ? null : "6 6" };
@@ -906,25 +975,36 @@
       const roundType = target ? escapeHtml(target.roundType) : "---";
       const radius = target ? `${Math.round(target.radius)} m` : "---";
       const auth = target && target.authCode ? escapeHtml(target.authCode) : "---";
+      const allTargets = state.targets.length ? state.targets.map(t => escapeHtml(t.name)).join(", ") : "---";
 
       return `
-        <h1>SBM-26 Fire Mission Map</h1>
+        <h1>SBM-26 FIRE MISSION CARD</h1>
         <p><strong>Generated:</strong> ${escapeHtml(now)}</p>
-        <p><strong>Target:</strong> ${targetName}</p>
+        <p><strong>Targets shown:</strong> ${allTargets}</p>
+        <p><strong>Active target:</strong> ${targetName}</p>
         <p><strong>Round:</strong> ${roundType}</p>
         <p><strong>Auth/Card:</strong> ${auth}</p>
-        <p><strong>Range:</strong> ${range}</p>
-        <p><strong>Azimuth:</strong> ${azimuth}</p>
+        <p><strong>Map range:</strong> ${range}</p>
+        <p><strong>Map azimuth:</strong> ${azimuth}</p>
         <p><strong>Likely hit radius:</strong> ${radius}</p>
         <p><strong>Safety:</strong> ${escapeHtml(safety)}</p>
         <p><strong>${escapeHtml(fieldStatus)}</strong></p>
-        <p><strong>Legend:</strong> BB red Â· Visible illum white/black Â· IR illum black/white Â· Leaflet green Â· No-fire yellow Â· Field area green outline</p>
         <p class="fine">Map aid only. Staff final approval required. Not a launch-setting calculator.</p>
       `;
     }
 
     function updatePrintDetails() {
       els.printDetails.innerHTML = buildPrintDetails();
+    }
+
+    function toggleBaseMap() {
+      const nextLayer = activeBaseLayer === "street" ? "satellite" : "street";
+      map.removeLayer(baseLayers[activeBaseLayer]);
+      baseLayers[nextLayer].addTo(map);
+      activeBaseLayer = nextLayer;
+      els.baseMapBtn.textContent = activeBaseLayer === "street" ? "Satellite" : "Street";
+      showToast(activeBaseLayer === "street" ? "Street map enabled" : "Satellite map enabled");
+      refreshMapSize(false);
     }
 
     function setMapOnly(active, requestBrowserFullscreen = false) {
@@ -953,7 +1033,7 @@
 
       const restoreAfterPrint = () => {
         document.body.classList.remove("print-map");
-        els.printMapBtn.textContent = "Print Map";
+        els.printMapBtn.textContent = "Print Card";
         refreshMapSize(true);
       };
 
@@ -1127,6 +1207,7 @@
     els.showMeBtn.onclick = showMeOnMap;
     els.gpsBtn.onclick = useGPS;
     els.fullMapBtn.onclick = toggleFullMap;
+    els.baseMapBtn.onclick = toggleBaseMap;
     els.printMapBtn.onclick = printMap;
     els.saveBtn.onclick = saveState;
     els.exportBtn.onclick = exportCSV;
