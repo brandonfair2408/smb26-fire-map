@@ -83,6 +83,22 @@
 
     #mapWrap { position: relative; min-height: 0; }
     #map { height: 100%; width: 100%; background: #202a1c; z-index: 1; }
+    #printDetails { display: none; }
+
+    body.map-only #app,
+    body.print-map #app {
+      grid-template-rows: auto 1fr;
+      grid-template-columns: 1fr;
+    }
+    body.map-only #mapWrap,
+    body.print-map #mapWrap {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+    body.map-only #panel,
+    body.print-map #panel {
+      display: none !important;
+    }
 
     /* Critical Leaflet CSS. This keeps the app working even if the external Leaflet CSS is delayed or blocked. */
     .leaflet-container { height: 100%; width: 100%; overflow: hidden; touch-action: pan-x pan-y; font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif; background: #ddd; outline-offset: 1px; }
@@ -208,6 +224,56 @@
       .metric .value { font-size: 18px; }
       .toolbox { top: 52px; max-width: 58vw; }
     }
+
+
+    @media print {
+      @page { size: landscape; margin: 0.35in; }
+      html, body { height: auto !important; overflow: visible !important; background: #fff !important; }
+      body.print-map { background: #fff !important; color: #111 !important; }
+      body.print-map #app { display: block !important; height: auto !important; width: auto !important; background: #fff !important; }
+      body.print-map header,
+      body.print-map #panel,
+      body.print-map .toolbox,
+      body.print-map .status-chip,
+      body.print-map .toast,
+      body.print-map .leaflet-control-zoom { display: none !important; }
+      body.print-map #mapWrap {
+        position: relative !important;
+        display: block !important;
+        height: 7.15in !important;
+        width: 100% !important;
+        border: 2px solid #111 !important;
+        overflow: hidden !important;
+        page-break-inside: avoid !important;
+      }
+      body.print-map #map { height: 100% !important; width: 100% !important; }
+      body.print-map #printDetails {
+        display: block !important;
+        position: absolute !important;
+        left: 12px !important;
+        bottom: 12px !important;
+        z-index: 10000 !important;
+        width: 3.75in !important;
+        background: rgba(255,255,255,.9) !important;
+        color: #111 !important;
+        border: 1px solid #111 !important;
+        padding: 10px !important;
+        font: 11px/1.35 Arial, sans-serif !important;
+        box-shadow: none !important;
+      }
+      body.print-map #printDetails h1 {
+        font-size: 14px !important;
+        margin: 0 0 6px !important;
+        letter-spacing: .04em !important;
+      }
+      body.print-map #printDetails p { margin: 3px 0 !important; }
+      body.print-map #printDetails .fine { font-size: 9px !important; margin-top: 7px !important; }
+      body.print-map .leaflet-control-attribution {
+        display: block !important;
+        color: #111 !important;
+        background: rgba(255,255,255,.75) !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -220,6 +286,8 @@
       <div class="header-actions">
         <button id="showMeBtn" class="small">Show Me</button>
         <button id="gpsBtn" class="primary small">Set Launch GPS</button>
+        <button id="fullMapBtn" class="small">Full Map</button>
+        <button id="printMapBtn" class="small">Print Map</button>
         <button id="saveBtn" class="small">Save</button>
         <button id="exportBtn" class="small">CSV</button>
       </div>
@@ -238,6 +306,7 @@
         <button id="toolField">Draw Field Area</button>
       </div>
       <div class="toast" id="toast"></div>
+      <div id="printDetails"></div>
     </section>
 
     <aside id="panel" class="grid">
@@ -370,6 +439,8 @@
     const els = {
       showMeBtn: document.getElementById("showMeBtn"),
       gpsBtn: document.getElementById("gpsBtn"),
+      fullMapBtn: document.getElementById("fullMapBtn"),
+      printMapBtn: document.getElementById("printMapBtn"),
       saveBtn: document.getElementById("saveBtn"),
       exportBtn: document.getElementById("exportBtn"),
       toolLauncher: document.getElementById("toolLauncher"),
@@ -403,7 +474,8 @@
       logMissionBtn: document.getElementById("logMissionBtn"),
       logList: document.getElementById("logList"),
       clearLogBtn: document.getElementById("clearLogBtn"),
-      toast: document.getElementById("toast")
+      toast: document.getElementById("toast"),
+      printDetails: document.getElementById("printDetails")
     };
 
     const launcherIcon = L.divIcon({ className: "", html: "<div class='crosshair'></div>", iconSize: [24, 24], iconAnchor: [12, 12] });
@@ -816,7 +888,87 @@
     }
 
     function renderRadioCall() { els.radioCall.value = buildRadioCall(); }
-    function renderAll() { renderMapObjects(); renderReadout(); renderLists(); renderFieldInfo(); renderRadioCall(); }
+
+    function buildPrintDetails() {
+      const target = getActiveTarget();
+      const now = new Date().toLocaleString();
+      let range = "---";
+      let azimuth = "---";
+      let safety = evaluateSafety().text;
+
+      if (state.launcher && target) {
+        range = `${Math.round(distanceMeters(state.launcher, target))} m`;
+        azimuth = `${formatBearing(bearingDeg(state.launcher, target))}Â° true`;
+      }
+
+      const fieldStatus = state.fieldAreaClosed ? `Field boundary active: ${state.fieldArea.length} points` : "Field boundary: not finalized";
+      const targetName = target ? escapeHtml(target.name) : "---";
+      const roundType = target ? escapeHtml(target.roundType) : "---";
+      const radius = target ? `${Math.round(target.radius)} m` : "---";
+      const auth = target && target.authCode ? escapeHtml(target.authCode) : "---";
+
+      return `
+        <h1>SBM-26 Fire Mission Map</h1>
+        <p><strong>Generated:</strong> ${escapeHtml(now)}</p>
+        <p><strong>Target:</strong> ${targetName}</p>
+        <p><strong>Round:</strong> ${roundType}</p>
+        <p><strong>Auth/Card:</strong> ${auth}</p>
+        <p><strong>Range:</strong> ${range}</p>
+        <p><strong>Azimuth:</strong> ${azimuth}</p>
+        <p><strong>Likely hit radius:</strong> ${radius}</p>
+        <p><strong>Safety:</strong> ${escapeHtml(safety)}</p>
+        <p><strong>${escapeHtml(fieldStatus)}</strong></p>
+        <p><strong>Legend:</strong> BB red Â· Visible illum white/black Â· IR illum black/white Â· Leaflet green Â· No-fire yellow Â· Field area green outline</p>
+        <p class="fine">Map aid only. Staff final approval required. Not a launch-setting calculator.</p>
+      `;
+    }
+
+    function updatePrintDetails() {
+      els.printDetails.innerHTML = buildPrintDetails();
+    }
+
+    function setMapOnly(active, requestBrowserFullscreen = false) {
+      document.body.classList.toggle("map-only", active);
+      els.fullMapBtn.textContent = active ? "Exit Map" : "Full Map";
+
+      if (active && requestBrowserFullscreen && !document.fullscreenElement && document.getElementById("app").requestFullscreen) {
+        document.getElementById("app").requestFullscreen().catch(() => {});
+      }
+      if (!active && document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+
+      refreshMapSize(true);
+      setTimeout(() => refreshMapSize(true), 250);
+    }
+
+    function toggleFullMap() {
+      setMapOnly(!document.body.classList.contains("map-only"), true);
+    }
+
+    function printMap() {
+      updatePrintDetails();
+      document.body.classList.add("print-map");
+      els.printMapBtn.textContent = "Preparing...";
+
+      const restoreAfterPrint = () => {
+        document.body.classList.remove("print-map");
+        els.printMapBtn.textContent = "Print Map";
+        refreshMapSize(true);
+      };
+
+      window.addEventListener("afterprint", restoreAfterPrint, { once: true });
+      refreshMapSize(true);
+      setTimeout(() => {
+        refreshMapSize(true);
+        window.print();
+        setTimeout(() => {
+          if (document.body.classList.contains("print-map")) restoreAfterPrint();
+        }, 2500);
+      }, 400);
+    }
+
+    function renderAll() { renderMapObjects(); renderReadout(); renderLists(); renderFieldInfo(); renderRadioCall(); updatePrintDetails(); }
 
     function saveState() {
       const payload = {
@@ -974,6 +1126,8 @@
     els.toolField.onclick = () => setTool("field");
     els.showMeBtn.onclick = showMeOnMap;
     els.gpsBtn.onclick = useGPS;
+    els.fullMapBtn.onclick = toggleFullMap;
+    els.printMapBtn.onclick = printMap;
     els.saveBtn.onclick = saveState;
     els.exportBtn.onclick = exportCSV;
     els.applyTargetBtn.onclick = updateActiveTargetFromForm;
@@ -1017,6 +1171,13 @@
     }
     window.addEventListener("resize", () => refreshMapSize(false));
     window.addEventListener("orientationchange", () => setTimeout(() => refreshMapSize(true), 350));
+    document.addEventListener("fullscreenchange", () => {
+      if (!document.fullscreenElement && document.body.classList.contains("map-only")) {
+        document.body.classList.remove("map-only");
+        els.fullMapBtn.textContent = "Full Map";
+        refreshMapSize(true);
+      }
+    });
   </script>
 </body>
 </html>
