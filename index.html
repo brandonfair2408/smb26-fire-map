@@ -51,43 +51,18 @@
       align-items: center;
       justify-content: space-between;
       gap: 10px;
-      background: rgba(17,21,15,.88);
+      background: rgba(17,21,15,.9);
       border-bottom: 1px solid var(--line);
       backdrop-filter: blur(8px);
       z-index: 20;
     }
 
-    .brand {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.05;
-      min-width: 0;
-    }
-
-    .brand .title {
-      font-weight: 800;
-      letter-spacing: .06em;
-      font-size: 14px;
-      white-space: nowrap;
-    }
-
-    .brand .subtitle {
-      color: var(--muted);
-      font-size: 11px;
-      margin-top: 3px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 70vw;
-    }
-
+    .brand { display: flex; flex-direction: column; line-height: 1.05; min-width: 0; }
+    .brand .title { font-weight: 800; letter-spacing: .06em; font-size: 14px; white-space: nowrap; }
+    .brand .subtitle { color: var(--muted); font-size: 11px; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70vw; }
     .header-actions { display: flex; gap: 7px; flex-shrink: 0; }
 
-    button, select, input, textarea {
-      font: inherit;
-      color: var(--text);
-    }
-
+    button, select, input, textarea { font: inherit; color: var(--text); }
     button {
       border: 1px solid var(--line);
       background: linear-gradient(180deg, #2a3325, #1b2319);
@@ -100,42 +75,18 @@
       user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
-
     button:active { transform: scale(.97); }
     button.primary { border-color: rgba(184,199,123,.8); background: linear-gradient(180deg, #536234, #323c24); }
     button.danger { border-color: rgba(217,104,82,.75); background: linear-gradient(180deg, #5c2d25, #331b18); }
-    button.ghost { background: rgba(24,30,21,.76); box-shadow: none; }
     button.selected { outline: 2px solid rgba(184,199,123,.5); background: #3a472c; }
     button.small { font-size: 12px; padding: 6px 9px; }
-    button.full { width: 100%; justify-content: center; }
 
     #mapWrap { position: relative; min-height: 0; }
     #map { height: 100%; width: 100%; background: #202a1c; z-index: 1; }
 
-    /* Critical Leaflet CSS baked in so the map still works if the external stylesheet is blocked, stripped, or slow to load. */
-    .leaflet-container {
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-      touch-action: pan-x pan-y;
-      font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
-      background: #ddd;
-      outline-offset: 1px;
-    }
-    .leaflet-pane,
-    .leaflet-tile,
-    .leaflet-marker-icon,
-    .leaflet-marker-shadow,
-    .leaflet-tile-container,
-    .leaflet-pane > svg,
-    .leaflet-pane > canvas,
-    .leaflet-zoom-box,
-    .leaflet-image-layer,
-    .leaflet-layer {
-      position: absolute;
-      left: 0;
-      top: 0;
-    }
+    /* Critical Leaflet CSS. This keeps the app working even if the external Leaflet CSS is delayed or blocked. */
+    .leaflet-container { height: 100%; width: 100%; overflow: hidden; touch-action: pan-x pan-y; font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif; background: #ddd; outline-offset: 1px; }
+    .leaflet-pane, .leaflet-tile, .leaflet-marker-icon, .leaflet-marker-shadow, .leaflet-tile-container, .leaflet-pane > svg, .leaflet-pane > canvas, .leaflet-zoom-box, .leaflet-image-layer, .leaflet-layer { position: absolute; left: 0; top: 0; }
     .leaflet-pane { z-index: 400; }
     .leaflet-tile-pane { z-index: 200; }
     .leaflet-overlay-pane { z-index: 400; }
@@ -145,8 +96,6 @@
     .leaflet-popup-pane { z-index: 700; }
     .leaflet-map-pane canvas { z-index: 100; }
     .leaflet-map-pane svg { z-index: 200; }
-    .leaflet-vml-shape { width: 1px; height: 1px; }
-    .lvml { behavior: url(#default#VML); display: inline-block; position: absolute; }
     .leaflet-control { position: relative; z-index: 800; pointer-events: auto; }
     .leaflet-top, .leaflet-bottom { position: absolute; z-index: 1000; pointer-events: none; }
     .leaflet-top { top: 0; }
@@ -159,39 +108,19 @@
     .leaflet-bottom .leaflet-control { margin-bottom: 10px; }
     .leaflet-left .leaflet-control { margin-left: 10px; }
     .leaflet-right .leaflet-control { margin-right: 10px; }
-    .leaflet-fade-anim .leaflet-popup { opacity: 0; transition: opacity 0.2s linear; }
-    .leaflet-fade-anim .leaflet-map-pane .leaflet-popup { opacity: 1; }
     .leaflet-zoom-animated { transform-origin: 0 0; }
     .leaflet-zoom-anim .leaflet-zoom-animated { transition: transform 0.25s cubic-bezier(0,0,0.25,1); }
-    .leaflet-zoom-anim .leaflet-tile, .leaflet-pan-anim .leaflet-tile { transition: none; }
     .leaflet-tile { filter: inherit; visibility: hidden; }
     .leaflet-tile-loaded { visibility: inherit; }
-    .leaflet-zoom-box { width: 0; height: 0; box-sizing: border-box; z-index: 800; }
-    .leaflet-overlay-pane svg { user-select: none; }
     .leaflet-layer, .leaflet-marker-icon, .leaflet-marker-shadow, .leaflet-tile, .leaflet-tile-container, .leaflet-pane > svg, .leaflet-pane > canvas { pointer-events: none; }
-    .leaflet-marker-icon.leaflet-interactive, .leaflet-image-layer.leaflet-interactive, .leaflet-pane > svg path.leaflet-interactive, svg.leaflet-image-layer.leaflet-interactive path { pointer-events: auto; }
+    .leaflet-marker-icon.leaflet-interactive, .leaflet-image-layer.leaflet-interactive, .leaflet-pane > svg path.leaflet-interactive { pointer-events: auto; }
     .leaflet-container img.leaflet-image-layer, .leaflet-container .leaflet-tile { max-width: none !important; max-height: none !important; }
-    .leaflet-container img.leaflet-tile { mix-blend-mode: plus-lighter; }
-    .leaflet-container.leaflet-touch-zoom { touch-action: pan-x pan-y; }
-    .leaflet-container.leaflet-touch-drag { touch-action: pinch-zoom; }
-    .leaflet-container.leaflet-touch-drag.leaflet-touch-zoom { touch-action: none; }
     .leaflet-tile, .leaflet-marker-icon, .leaflet-marker-shadow { user-select: none; -webkit-user-drag: none; }
     .leaflet-container.leaflet-grab { cursor: grab; }
     .leaflet-container.leaflet-grabbing { cursor: grabbing; }
-    .leaflet-control-zoom a {
-      display: block;
-      width: 30px;
-      height: 30px;
-      line-height: 30px;
-      text-align: center;
-      text-decoration: none;
-      color: #111;
-      background: #fff;
-      border-bottom: 1px solid #ccc;
-    }
-    .leaflet-control-zoom a:first-child { border-top-left-radius: 4px; border-top-right-radius: 4px; }
-    .leaflet-control-zoom a:last-child { border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; border-bottom: 0; }
     .leaflet-control-zoom { border: 2px solid rgba(0,0,0,.2); border-radius: 4px; overflow: hidden; }
+    .leaflet-control-zoom a { display: block; width: 30px; height: 30px; line-height: 30px; text-align: center; text-decoration: none; color: #111; background: #fff; border-bottom: 1px solid #ccc; }
+    .leaflet-control-zoom a:last-child { border-bottom: 0; }
     .leaflet-control-attribution { font-size: 9px !important; background: rgba(255,255,255,.65) !important; }
     .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #1b2319; color: var(--text); border: 1px solid var(--line); }
     .leaflet-popup-content { margin: 10px 12px; font-size: 12px; }
@@ -213,240 +142,61 @@
       font-size: 12px;
       max-width: calc(100% - 20px);
     }
-
     .dot { width: 9px; height: 9px; border-radius: 999px; background: var(--muted); flex: 0 0 9px; }
     .dot.ok { background: var(--ok); box-shadow: 0 0 12px rgba(143,191,114,.8); }
     .dot.warn { background: var(--warn); box-shadow: 0 0 12px rgba(214,173,85,.8); }
     .dot.danger { background: var(--danger); box-shadow: 0 0 12px rgba(217,104,82,.8); }
 
-    .toolbox {
-      position: absolute;
-      right: 10px;
-      top: 10px;
-      z-index: 10;
-      display: grid;
-      gap: 7px;
-      max-width: 44vw;
-    }
-
+    .toolbox { position: absolute; right: 10px; top: 10px; z-index: 10; display: grid; gap: 7px; max-width: 48vw; }
     .toolbox button { text-align: left; font-size: 12px; padding: 8px 10px; }
 
-    .crosshair {
-      width: 20px;
-      height: 20px;
-      border-radius: 999px;
-      background: var(--blue);
-      border: 2px solid white;
-      box-shadow: 0 0 0 2px rgba(112,168,216,.45), 0 0 16px rgba(112,168,216,.8);
-    }
+    .crosshair { width: 20px; height: 20px; border-radius: 999px; background: var(--blue); border: 2px solid white; box-shadow: 0 0 0 2px rgba(112,168,216,.45), 0 0 16px rgba(112,168,216,.8); }
+    .current-location-pin { width: 18px; height: 18px; border-radius: 999px; background: #4da3ff; border: 3px solid white; box-shadow: 0 0 0 8px rgba(77,163,255,.22), 0 0 18px rgba(77,163,255,.85); }
+    .field-vertex-pin { width: 16px; height: 16px; border-radius: 999px; background: #8fbf72; border: 2px solid #f4ffe8; box-shadow: 0 0 0 2px rgba(143,191,114,.35), 0 3px 10px rgba(0,0,0,.45); }
+    .target-pin { width: 22px; height: 22px; border-radius: 999px 999px 999px 0; transform: rotate(-45deg); background: var(--danger); border: 2px solid #fff1e8; box-shadow: 0 0 0 2px rgba(217,104,82,.35), 0 4px 14px rgba(0,0,0,.45); }
+    .target-pin::after { content: ""; position: absolute; width: 6px; height: 6px; border-radius: 50%; left: 6px; top: 6px; background: #fff1e8; }
+    .nofire-pin { width: 18px; height: 18px; border-radius: 4px; background: var(--warn); border: 2px solid #fff7de; box-shadow: 0 0 0 2px rgba(214,173,85,.35), 0 4px 14px rgba(0,0,0,.45); transform: rotate(45deg); }
 
-    .target-pin {
-      width: 22px;
-      height: 22px;
-      border-radius: 999px 999px 999px 0;
-      transform: rotate(-45deg);
-      background: var(--danger);
-      border: 2px solid #fff1e8;
-      box-shadow: 0 0 0 2px rgba(217,104,82,.35), 0 4px 14px rgba(0,0,0,.45);
-    }
-    .target-pin::after {
-      content: "";
-      position: absolute;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      left: 6px;
-      top: 6px;
-      background: #fff1e8;
-    }
-
-    .nofire-pin {
-      width: 18px;
-      height: 18px;
-      border-radius: 4px;
-      background: var(--warn);
-      border: 2px solid #fff7de;
-      box-shadow: 0 0 0 2px rgba(214,173,85,.35), 0 4px 14px rgba(0,0,0,.45);
-      transform: rotate(45deg);
-    }
-
-    #panel {
-      max-height: 52vh;
-      min-height: 192px;
-      overflow: auto;
-      padding: 10px 10px calc(10px + var(--safe-area-bottom));
-      background: rgba(17,21,15,.96);
-      border-top: 1px solid var(--line);
-      box-shadow: 0 -16px 38px rgba(0,0,0,.38);
-      z-index: 20;
-    }
-
-    .grid {
-      display: grid;
-      gap: 10px;
-    }
-
-    .cols {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-    }
-
-    .card {
-      background: linear-gradient(180deg, rgba(34,43,31,.95), rgba(24,31,22,.95));
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 10px;
-      box-shadow: 0 10px 24px rgba(0,0,0,.18);
-    }
-
-    .card h2, .card h3 {
-      margin: 0 0 8px;
-      font-size: 13px;
-      letter-spacing: .03em;
-      text-transform: uppercase;
-      color: var(--accent);
-    }
-
-    .readout {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .metric {
-      padding: 9px;
-      border: 1px solid rgba(63,76,55,.85);
-      border-radius: 12px;
-      background: rgba(17,21,15,.55);
-      min-height: 62px;
-    }
-
-    .metric .label {
-      font-size: 10px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: .05em;
-    }
-
-    .metric .value {
-      font-size: clamp(18px, 5vw, 28px);
-      font-weight: 800;
-      margin-top: 3px;
-      white-space: nowrap;
-    }
-
+    #panel { max-height: 52vh; min-height: 192px; overflow: auto; padding: 10px 10px calc(10px + var(--safe-area-bottom)); background: rgba(17,21,15,.96); border-top: 1px solid var(--line); box-shadow: 0 -16px 38px rgba(0,0,0,.38); z-index: 20; }
+    .grid { display: grid; gap: 10px; }
+    .cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .card { background: linear-gradient(180deg, rgba(34,43,31,.95), rgba(24,31,22,.95)); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; box-shadow: 0 10px 24px rgba(0,0,0,.18); }
+    .card h2, .card h3 { margin: 0 0 8px; font-size: 13px; letter-spacing: .03em; text-transform: uppercase; color: var(--accent); }
+    .readout { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .metric { padding: 9px; border: 1px solid rgba(63,76,55,.85); border-radius: 12px; background: rgba(17,21,15,.55); min-height: 62px; }
+    .metric .label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+    .metric .value { font-size: clamp(18px, 5vw, 28px); font-weight: 800; margin-top: 3px; white-space: nowrap; }
     .metric .unit { font-size: 12px; color: var(--muted); margin-left: 2px; }
-
-    label {
-      display: grid;
-      gap: 5px;
-      color: var(--muted);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-    }
-
-    input, select, textarea {
-      width: 100%;
-      border: 1px solid var(--line);
-      background: rgba(9,12,8,.72);
-      border-radius: 10px;
-      padding: 9px;
-      color: var(--text);
-      outline: none;
-    }
-
+    label { display: grid; gap: 5px; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; }
+    input, select, textarea { width: 100%; border: 1px solid var(--line); background: rgba(9,12,8,.72); border-radius: 10px; padding: 9px; color: var(--text); outline: none; }
     textarea { min-height: 94px; resize: vertical; line-height: 1.35; text-transform: none; letter-spacing: normal; font-size: 12px; }
     input:focus, select:focus, textarea:focus { border-color: rgba(184,199,123,.85); box-shadow: 0 0 0 2px rgba(184,199,123,.14); }
-
     .button-row { display: flex; gap: 8px; flex-wrap: wrap; }
     .button-row button { flex: 1 1 auto; }
-
-    .list {
-      display: grid;
-      gap: 7px;
-      max-height: 145px;
-      overflow: auto;
-      padding-right: 2px;
-    }
-
-    .list-item {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 8px;
-      align-items: center;
-      padding: 8px;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(17,21,15,.45);
-    }
-
+    .list { display: grid; gap: 7px; max-height: 145px; overflow: auto; padding-right: 2px; }
+    .list-item { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 8px; border: 1px solid var(--line); border-radius: 12px; background: rgba(17,21,15,.45); }
     .list-item.active { border-color: rgba(184,199,123,.8); background: rgba(83,98,52,.35); }
     .list-title { font-size: 12px; font-weight: 700; }
     .list-meta { color: var(--muted); font-size: 11px; margin-top: 2px; }
-
-    .notice {
-      color: var(--muted);
-      font-size: 11px;
-      line-height: 1.35;
-    }
-
-    .safety-ok { color: var(--ok); }
-    .safety-warn { color: var(--warn); }
-    .safety-danger { color: var(--danger); }
-
-    .divider { height: 1px; background: var(--line); margin: 8px 0; opacity: .75; }
-
-    .hidden { display: none !important; }
-
-    .toast {
-      position: absolute;
-      left: 50%;
-      bottom: calc(210px + var(--safe-area-bottom));
-      transform: translateX(-50%);
-      z-index: 30;
-      background: rgba(9,12,8,.9);
-      color: var(--text);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 9px 13px;
-      font-size: 12px;
-      box-shadow: 0 14px 28px rgba(0,0,0,.35);
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity .15s ease, transform .15s ease;
-      white-space: nowrap;
-      max-width: calc(100vw - 24px);
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
+    .notice { color: var(--muted); font-size: 11px; line-height: 1.35; }
+    .toast { position: absolute; left: 50%; bottom: calc(210px + var(--safe-area-bottom)); transform: translateX(-50%); z-index: 30; background: rgba(9,12,8,.9); color: var(--text); border: 1px solid var(--line); border-radius: 999px; padding: 9px 13px; font-size: 12px; box-shadow: 0 14px 28px rgba(0,0,0,.35); pointer-events: none; opacity: 0; transition: opacity .15s ease, transform .15s ease; white-space: nowrap; max-width: calc(100vw - 24px); overflow: hidden; text-overflow: ellipsis; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(-6px); }
 
     @media (min-width: 820px) {
-      #app {
-        grid-template-rows: auto 1fr;
-        grid-template-columns: 1fr 390px;
-      }
+      #app { grid-template-rows: auto 1fr; grid-template-columns: 1fr 390px; }
       header { grid-column: 1 / -1; }
       #mapWrap { grid-column: 1; grid-row: 2; }
-      #panel {
-        grid-column: 2;
-        grid-row: 2;
-        max-height: none;
-        height: 100%;
-        border-top: 0;
-        border-left: 1px solid var(--line);
-      }
+      #panel { grid-column: 2; grid-row: 2; max-height: none; height: 100%; border-top: 0; border-left: 1px solid var(--line); }
       .toast { bottom: 24px; }
     }
 
-    @media (max-width: 420px) {
-      .header-actions button { font-size: 12px; padding: 7px 8px; }
-      .readout { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @media (max-width: 430px) {
+      .header-actions button { font-size: 11px; padding: 7px 7px; }
+      .brand .title { font-size: 12px; }
+      .brand .subtitle { max-width: 46vw; }
       .metric { padding: 7px; min-height: 58px; }
       .metric .value { font-size: 18px; }
-      .toolbox { top: 52px; max-width: 55vw; }
+      .toolbox { top: 52px; max-width: 58vw; }
     }
   </style>
 </head>
@@ -458,7 +208,8 @@
         <div class="subtitle">Internal safety visualization and mission logging aid</div>
       </div>
       <div class="header-actions">
-        <button id="gpsBtn" class="primary small">Use GPS</button>
+        <button id="showMeBtn" class="small">Show Me</button>
+        <button id="gpsBtn" class="primary small">Set Launch GPS</button>
         <button id="saveBtn" class="small">Save</button>
         <button id="exportBtn" class="small">CSV</button>
       </div>
@@ -474,6 +225,7 @@
         <button id="toolLauncher" class="selected">Set Launcher</button>
         <button id="toolTarget">Add Target</button>
         <button id="toolNoFire">Add No-Fire Zone</button>
+        <button id="toolField">Draw Field Area</button>
       </div>
       <div class="toast" id="toast"></div>
     </section>
@@ -482,18 +234,9 @@
       <div class="card">
         <h2>Mission Readout</h2>
         <div class="readout">
-          <div class="metric">
-            <div class="label">Range</div>
-            <div class="value"><span id="rangeOut">---</span><span class="unit">m</span></div>
-          </div>
-          <div class="metric">
-            <div class="label">Azimuth</div>
-            <div class="value"><span id="bearingOut">---</span><span class="unit">°T</span></div>
-          </div>
-          <div class="metric">
-            <div class="label">Hit Radius</div>
-            <div class="value"><span id="radiusOut">25</span><span class="unit">m</span></div>
-          </div>
+          <div class="metric"><div class="label">Range</div><div class="value"><span id="rangeOut">---</span><span class="unit">m</span></div></div>
+          <div class="metric"><div class="label">Azimuth</div><div class="value"><span id="bearingOut">---</span><span class="unit">Â°T</span></div></div>
+          <div class="metric"><div class="label">Hit Radius</div><div class="value"><span id="radiusOut">25</span><span class="unit">m</span></div></div>
         </div>
         <p class="notice" style="margin: 8px 0 0;">This app is for event coordination, safety checks, and logging only. It does not calculate launch settings.</p>
       </div>
@@ -501,9 +244,7 @@
       <div class="card grid">
         <h3>Active Target</h3>
         <div class="cols">
-          <label>Target Name
-            <input id="targetName" value="ALPHA-1" />
-          </label>
+          <label>Target Name<input id="targetName" value="ALPHA-1" /></label>
           <label>Round Type
             <select id="roundType">
               <option>BB</option>
@@ -523,13 +264,9 @@
               <option value="60">60 m - Safety</option>
             </select>
           </label>
-          <label>Auth / Card ID
-            <input id="authCode" placeholder="Example: GC-1047" />
-          </label>
+          <label>Auth / Card ID<input id="authCode" placeholder="Example: GC-1047" /></label>
         </div>
-        <label>Target Description
-          <input id="targetDesc" placeholder="Example: squad near plywood bunker" />
-        </label>
+        <label>Target Description<input id="targetDesc" placeholder="Example: squad near plywood bunker" /></label>
         <div class="button-row">
           <button id="applyTargetBtn" class="primary">Apply Target Data</button>
           <button id="centerTargetBtn">Center Target</button>
@@ -543,8 +280,19 @@
       </div>
 
       <div class="card grid">
+        <h3>Field Area</h3>
+        <p class="notice" style="margin:0;">Tap â€œDraw Field Areaâ€, then tap the map corners in order. Finish the field to turn on outside-field warnings.</p>
+        <div class="button-row">
+          <button id="finishFieldBtn" class="primary">Finish Field</button>
+          <button id="undoFieldBtn">Undo Point</button>
+          <button id="clearFieldBtn" class="danger">Clear Field</button>
+        </div>
+        <div id="fieldAreaInfo" class="notice">No field area drawn.</div>
+      </div>
+
+      <div class="card grid">
         <h3>No-Fire Zones</h3>
-        <p class="notice" style="margin:0;">Use simple circular zones for staging, parking, buildings, spectators, roads, or anything that should never overlap the hit area.</p>
+        <p class="notice" style="margin:0;">Use circular zones for staging, parking, buildings, spectators, roads, or anything that should never overlap the hit area.</p>
         <div class="cols">
           <label>Zone Radius
             <select id="zoneRadius">
@@ -554,13 +302,9 @@
               <option value="100">100 m</option>
             </select>
           </label>
-          <label>Zone Name
-            <input id="zoneName" value="NO-FIRE" />
-          </label>
+          <label>Zone Name<input id="zoneName" value="NO-FIRE" /></label>
         </div>
-        <div class="button-row">
-          <button id="clearZonesBtn">Clear Zones</button>
-        </div>
+        <div class="button-row"><button id="clearZonesBtn">Clear Zones</button></div>
         <div id="zoneList" class="list"></div>
       </div>
 
@@ -576,9 +320,7 @@
       <div class="card grid">
         <h3>Mission Log</h3>
         <div id="logList" class="list"></div>
-        <div class="button-row">
-          <button id="clearLogBtn" class="danger">Clear Log</button>
-        </div>
+        <div class="button-row"><button id="clearLogBtn" class="danger">Clear Log</button></div>
       </div>
     </aside>
   </div>
@@ -590,17 +332,23 @@
   ></script>
 
   <script>
-    const STORAGE_KEY = "sbm26_fire_map_v1";
+    const STORAGE_KEY = "sbm26_fire_map_v4";
 
     const state = {
       tool: "launcher",
       launcher: null,
+      currentLocation: null,
+      fieldArea: [],
+      fieldAreaClosed: false,
       targets: [],
       activeTargetId: null,
       noFireZones: [],
       log: [],
       mapObjects: {
         launcherMarker: null,
+        currentMarker: null,
+        fieldShape: null,
+        fieldVertexMarkers: [],
         targetMarkers: new Map(),
         targetCircles: new Map(),
         noFireMarkers: new Map(),
@@ -610,13 +358,14 @@
     };
 
     const els = {
+      showMeBtn: document.getElementById("showMeBtn"),
       gpsBtn: document.getElementById("gpsBtn"),
       saveBtn: document.getElementById("saveBtn"),
       exportBtn: document.getElementById("exportBtn"),
       toolLauncher: document.getElementById("toolLauncher"),
       toolTarget: document.getElementById("toolTarget"),
       toolNoFire: document.getElementById("toolNoFire"),
-      statusChip: document.getElementById("statusChip"),
+      toolField: document.getElementById("toolField"),
       safetyDot: document.getElementById("safetyDot"),
       safetyText: document.getElementById("safetyText"),
       rangeOut: document.getElementById("rangeOut"),
@@ -631,6 +380,10 @@
       centerTargetBtn: document.getElementById("centerTargetBtn"),
       deleteTargetBtn: document.getElementById("deleteTargetBtn"),
       targetList: document.getElementById("targetList"),
+      finishFieldBtn: document.getElementById("finishFieldBtn"),
+      undoFieldBtn: document.getElementById("undoFieldBtn"),
+      clearFieldBtn: document.getElementById("clearFieldBtn"),
+      fieldAreaInfo: document.getElementById("fieldAreaInfo"),
       zoneRadius: document.getElementById("zoneRadius"),
       zoneName: document.getElementById("zoneName"),
       clearZonesBtn: document.getElementById("clearZonesBtn"),
@@ -644,46 +397,35 @@
     };
 
     const launcherIcon = L.divIcon({ className: "", html: "<div class='crosshair'></div>", iconSize: [24, 24], iconAnchor: [12, 12] });
+    const currentLocationIcon = L.divIcon({ className: "", html: "<div class='current-location-pin'></div>", iconSize: [24, 24], iconAnchor: [12, 12] });
+    const fieldVertexIcon = L.divIcon({ className: "", html: "<div class='field-vertex-pin'></div>", iconSize: [22, 22], iconAnchor: [11, 11] });
     const targetIcon = L.divIcon({ className: "", html: "<div class='target-pin'></div>", iconSize: [28, 28], iconAnchor: [14, 26] });
     const noFireIcon = L.divIcon({ className: "", html: "<div class='nofire-pin'></div>", iconSize: [22, 22], iconAnchor: [11, 11] });
 
-    const map = L.map("map", {
-      zoomControl: false,
-      preferCanvas: true
-    }).setView([38.25, -77.0], 13);
-
+    const map = L.map("map", { zoomControl: false, preferCanvas: true }).setView([38.25, -77.0], 13);
     L.control.zoom({ position: "bottomleft" }).addTo(map);
-
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 20,
       attribution: "&copy; OpenStreetMap contributors"
     }).addTo(map);
 
-    function uid(prefix) {
-      return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
-    }
-
+    function uid(prefix) { return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`; }
     function showToast(message) {
       els.toast.textContent = message;
       els.toast.classList.add("show");
       clearTimeout(showToast._timer);
       showToast._timer = setTimeout(() => els.toast.classList.remove("show"), 1900);
     }
-
     function toRad(deg) { return deg * Math.PI / 180; }
     function toDeg(rad) { return rad * 180 / Math.PI; }
-
     function distanceMeters(a, b) {
       const R = 6371008.8;
       const lat1 = toRad(a.lat), lat2 = toRad(b.lat);
       const dLat = toRad(b.lat - a.lat);
       const dLng = toRad(b.lng - a.lng);
-      const sinDLat = Math.sin(dLat / 2);
-      const sinDLng = Math.sin(dLng / 2);
-      const h = sinDLat * sinDLat + Math.cos(lat1) * Math.cos(lat2) * sinDLng * sinDLng;
+      const h = Math.sin(dLat/2)**2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng/2)**2;
       return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
     }
-
     function bearingDeg(a, b) {
       const lat1 = toRad(a.lat), lat2 = toRad(b.lat);
       const dLng = toRad(b.lng - a.lng);
@@ -691,27 +433,24 @@
       const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
       return (toDeg(Math.atan2(y, x)) + 360) % 360;
     }
-
-    function formatMeters(m) {
-      if (!Number.isFinite(m)) return "---";
-      return m < 1000 ? Math.round(m).toString() : (m / 1000).toFixed(2) + "k";
-    }
-
-    function formatBearing(b) {
-      if (!Number.isFinite(b)) return "---";
-      return String(Math.round(b)).padStart(3, "0");
-    }
-
-    function getActiveTarget() {
-      return state.targets.find(t => t.id === state.activeTargetId) || null;
-    }
+    function formatMeters(m) { if (!Number.isFinite(m)) return "---"; return m < 1000 ? Math.round(m).toString() : (m / 1000).toFixed(2) + "k"; }
+    function formatBearing(b) { if (!Number.isFinite(b)) return "---"; return String(Math.round(b)).padStart(3, "0"); }
+    function escapeHtml(str) { return String(str ?? "").replace(/[&<>'"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", "'":"&#39;", '"':"&quot;" }[c])); }
+    function getActiveTarget() { return state.targets.find(t => t.id === state.activeTargetId) || null; }
 
     function setTool(tool) {
       state.tool = tool;
       els.toolLauncher.classList.toggle("selected", tool === "launcher");
       els.toolTarget.classList.toggle("selected", tool === "target");
       els.toolNoFire.classList.toggle("selected", tool === "nofire");
-      showToast(tool === "launcher" ? "Tap map to set launcher" : tool === "target" ? "Tap map to add target" : "Tap map to add no-fire zone");
+      els.toolField.classList.toggle("selected", tool === "field");
+      const messages = {
+        launcher: "Tap map to set launcher",
+        target: "Tap map to add target",
+        nofire: "Tap map to add no-fire zone",
+        field: "Tap map corners to draw field area"
+      };
+      showToast(messages[tool] || "Tool selected");
     }
 
     function setLauncher(latlng, source = "manual") {
@@ -725,6 +464,18 @@
       } else {
         state.mapObjects.launcherMarker.setLatLng(latlng);
       }
+      renderAll();
+    }
+
+    function setCurrentLocation(latlng, accuracy = null) {
+      state.currentLocation = { lat: latlng.lat, lng: latlng.lng, accuracy, updatedAt: new Date().toISOString() };
+      if (!state.mapObjects.currentMarker) {
+        state.mapObjects.currentMarker = L.marker(latlng, { icon: currentLocationIcon }).addTo(map);
+      } else {
+        state.mapObjects.currentMarker.setLatLng(latlng);
+      }
+      const accText = Number.isFinite(accuracy) ? ` Â±${Math.round(accuracy)} m` : "";
+      state.mapObjects.currentMarker.bindPopup(`Current location${accText}`);
       renderAll();
     }
 
@@ -788,70 +539,130 @@
       renderAll();
     }
 
-    function circlesOverlap(a, ar, b, br) {
-      return distanceMeters(a, b) <= (ar + br);
+    function addFieldPoint(latlng) {
+      if (state.fieldAreaClosed) {
+        state.fieldArea = [];
+        state.fieldAreaClosed = false;
+      }
+      state.fieldArea.push({ lat: latlng.lat, lng: latlng.lng });
+      renderAll();
+    }
+    function finishFieldArea() {
+      if (state.fieldArea.length < 3) return showToast("Need at least 3 field points");
+      state.fieldAreaClosed = true;
+      renderAll();
+      showToast("Field area finished");
+    }
+    function undoFieldPoint() {
+      if (!state.fieldArea.length) return showToast("No field points to undo");
+      state.fieldArea.pop();
+      state.fieldAreaClosed = false;
+      renderAll();
+    }
+    function clearFieldArea() {
+      state.fieldArea = [];
+      state.fieldAreaClosed = false;
+      renderAll();
+      showToast("Field area cleared");
+    }
+
+    function circlesOverlap(a, ar, b, br) { return distanceMeters(a, b) <= (ar + br); }
+    function pointInPolygon(point, polygon) {
+      if (!polygon || polygon.length < 3) return true;
+      const x = point.lng, y = point.lat;
+      let inside = false;
+      for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+        const xi = polygon[i].lng, yi = polygon[i].lat;
+        const xj = polygon[j].lng, yj = polygon[j].lat;
+        const intersects = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / ((yj - yi) || 1e-12) + xi);
+        if (intersects) inside = !inside;
+      }
+      return inside;
+    }
+    function destinationPoint(start, bearing, distanceM) {
+      const R = 6371008.8;
+      const brng = toRad(bearing);
+      const lat1 = toRad(start.lat);
+      const lon1 = toRad(start.lng);
+      const d = distanceM / R;
+      const lat2 = Math.asin(Math.sin(lat1) * Math.cos(d) + Math.cos(lat1) * Math.sin(d) * Math.cos(brng));
+      const lon2 = lon1 + Math.atan2(Math.sin(brng) * Math.sin(d) * Math.cos(lat1), Math.cos(d) - Math.sin(lat1) * Math.sin(lat2));
+      return { lat: toDeg(lat2), lng: ((toDeg(lon2) + 540) % 360) - 180 };
+    }
+    function hitAreaExtendsOutsideField(target) {
+      if (!state.fieldAreaClosed || state.fieldArea.length < 3 || !target) return false;
+      const center = { lat: target.lat, lng: target.lng };
+      if (!pointInPolygon(center, state.fieldArea)) return true;
+      for (let i = 0; i < 24; i++) {
+        const p = destinationPoint(center, i * 15, target.radius);
+        if (!pointInPolygon(p, state.fieldArea)) return true;
+      }
+      return false;
     }
 
     function evaluateSafety() {
       const target = getActiveTarget();
-      if (!state.launcher || !target) {
-        return { level: "warn", text: "Set launcher and target" };
-      }
-
+      if (!state.launcher || !target) return { level: "warn", text: "Set launcher and target" };
       const targetPoint = { lat: target.lat, lng: target.lng };
+      if (state.fieldAreaClosed && state.fieldArea.length >= 3 && !pointInPolygon(targetPoint, state.fieldArea)) {
+        return { level: "danger", text: "NO FIRE: target is outside field area" };
+      }
       const overlappingZones = state.noFireZones.filter(z => circlesOverlap(targetPoint, target.radius, { lat: z.lat, lng: z.lng }, z.radius));
+      if (overlappingZones.length) return { level: "danger", text: `NO FIRE: hit area overlaps ${overlappingZones[0].name}` };
+      if (hitAreaExtendsOutsideField(target)) return { level: "warn", text: "CAUTION: hit radius extends outside field area" };
+      if (target.radius >= 60) return { level: "warn", text: "CAUTION: wide hit-radius selected" };
+      return { level: "ok", text: "CLEAR: target and hit area pass map checks" };
+    }
 
-      if (overlappingZones.length) {
-        return { level: "danger", text: `NO FIRE: hit area overlaps ${overlappingZones[0].name}` };
+    function renderFieldShape() {
+      if (state.mapObjects.fieldShape) {
+        map.removeLayer(state.mapObjects.fieldShape);
+        state.mapObjects.fieldShape = null;
       }
-
-      if (target.radius >= 60) {
-        return { level: "warn", text: "CAUTION: wide hit-radius selected" };
+      for (const marker of state.mapObjects.fieldVertexMarkers) map.removeLayer(marker);
+      state.mapObjects.fieldVertexMarkers = [];
+      if (!state.fieldArea.length) return;
+      const latlngs = state.fieldArea.map(p => [p.lat, p.lng]);
+      if (state.fieldAreaClosed && state.fieldArea.length >= 3) {
+        state.mapObjects.fieldShape = L.polygon(latlngs, { color: "#8fbf72", fillColor: "#8fbf72", fillOpacity: 0.1, weight: 3 }).addTo(map);
+      } else if (state.fieldArea.length >= 2) {
+        state.mapObjects.fieldShape = L.polyline(latlngs, { color: "#8fbf72", weight: 3, dashArray: "9 7" }).addTo(map);
       }
-
-      return { level: "ok", text: "CLEAR: no zone overlap detected" };
+      state.fieldArea.forEach((point, index) => {
+        const marker = L.marker([point.lat, point.lng], { icon: fieldVertexIcon, draggable: true }).addTo(map);
+        marker.bindPopup(`Field point ${index + 1}`);
+        marker.on("dragend", () => {
+          const ll = marker.getLatLng();
+          state.fieldArea[index] = { lat: ll.lat, lng: ll.lng };
+          renderAll();
+        });
+        state.mapObjects.fieldVertexMarkers.push(marker);
+      });
     }
 
     function renderMapObjects() {
+      if (state.currentLocation) {
+        const latlng = [state.currentLocation.lat, state.currentLocation.lng];
+        if (!state.mapObjects.currentMarker) state.mapObjects.currentMarker = L.marker(latlng, { icon: currentLocationIcon }).addTo(map);
+        else state.mapObjects.currentMarker.setLatLng(latlng);
+      }
+      renderFieldShape();
       for (const target of state.targets) {
         const latlng = [target.lat, target.lng];
         let marker = state.mapObjects.targetMarkers.get(target.id);
         if (!marker) {
           marker = L.marker(latlng, { icon: targetIcon, draggable: true }).addTo(map);
-          marker.on("click", () => {
-            state.activeTargetId = target.id;
-            loadTargetIntoForm(target);
-            renderAll();
-          });
-          marker.on("dragend", () => {
-            const ll = marker.getLatLng();
-            target.lat = ll.lat;
-            target.lng = ll.lng;
-            renderAll();
-          });
+          marker.on("click", () => { state.activeTargetId = target.id; loadTargetIntoForm(target); renderAll(); });
+          marker.on("dragend", () => { const ll = marker.getLatLng(); target.lat = ll.lat; target.lng = ll.lng; renderAll(); });
           state.mapObjects.targetMarkers.set(target.id, marker);
-        } else {
-          marker.setLatLng(latlng);
-        }
+        } else marker.setLatLng(latlng);
         marker.bindPopup(`<b>${escapeHtml(target.name)}</b><br>${Math.round(target.radius)} m likely-hit radius`);
-
         let circle = state.mapObjects.targetCircles.get(target.id);
         const isActive = target.id === state.activeTargetId;
-        const circleOpts = {
-          radius: target.radius,
-          color: isActive ? "#d96852" : "#b07c66",
-          fillColor: isActive ? "#d96852" : "#b07c66",
-          fillOpacity: isActive ? 0.2 : 0.11,
-          weight: isActive ? 2 : 1,
-          dashArray: isActive ? null : "6 6"
-        };
+        const circleOpts = { radius: target.radius, color: isActive ? "#d96852" : "#b07c66", fillColor: isActive ? "#d96852" : "#b07c66", fillOpacity: isActive ? 0.2 : 0.11, weight: isActive ? 2 : 1, dashArray: isActive ? null : "6 6" };
         if (!circle) {
           circle = L.circle(latlng, circleOpts).addTo(map);
-          circle.on("click", () => {
-            state.activeTargetId = target.id;
-            loadTargetIntoForm(target);
-            renderAll();
-          });
+          circle.on("click", () => { state.activeTargetId = target.id; loadTargetIntoForm(target); renderAll(); });
           state.mapObjects.targetCircles.set(target.id, circle);
         } else {
           circle.setLatLng(latlng);
@@ -859,70 +670,37 @@
           circle.setRadius(target.radius);
         }
       }
-
       for (const [id, marker] of state.mapObjects.targetMarkers.entries()) {
-        if (!state.targets.some(t => t.id === id)) {
-          map.removeLayer(marker);
-          state.mapObjects.targetMarkers.delete(id);
-        }
+        if (!state.targets.some(t => t.id === id)) { map.removeLayer(marker); state.mapObjects.targetMarkers.delete(id); }
       }
       for (const [id, circle] of state.mapObjects.targetCircles.entries()) {
-        if (!state.targets.some(t => t.id === id)) {
-          map.removeLayer(circle);
-          state.mapObjects.targetCircles.delete(id);
-        }
+        if (!state.targets.some(t => t.id === id)) { map.removeLayer(circle); state.mapObjects.targetCircles.delete(id); }
       }
-
       for (const zone of state.noFireZones) {
         const latlng = [zone.lat, zone.lng];
         let marker = state.mapObjects.noFireMarkers.get(zone.id);
         if (!marker) {
           marker = L.marker(latlng, { icon: noFireIcon, draggable: true }).addTo(map);
-          marker.on("dragend", () => {
-            const ll = marker.getLatLng();
-            zone.lat = ll.lat;
-            zone.lng = ll.lng;
-            renderAll();
-          });
+          marker.on("dragend", () => { const ll = marker.getLatLng(); zone.lat = ll.lat; zone.lng = ll.lng; renderAll(); });
           state.mapObjects.noFireMarkers.set(zone.id, marker);
-        } else {
-          marker.setLatLng(latlng);
-        }
+        } else marker.setLatLng(latlng);
         marker.bindPopup(`<b>${escapeHtml(zone.name)}</b><br>${Math.round(zone.radius)} m no-fire radius`);
-
         let circle = state.mapObjects.noFireCircles.get(zone.id);
         const opts = { radius: zone.radius, color: "#d6ad55", fillColor: "#d6ad55", fillOpacity: 0.16, weight: 2, dashArray: "8 7" };
-        if (!circle) {
-          circle = L.circle(latlng, opts).addTo(map);
-          state.mapObjects.noFireCircles.set(zone.id, circle);
-        } else {
-          circle.setLatLng(latlng);
-          circle.setRadius(zone.radius);
-          circle.setStyle(opts);
-        }
+        if (!circle) { circle = L.circle(latlng, opts).addTo(map); state.mapObjects.noFireCircles.set(zone.id, circle); }
+        else { circle.setLatLng(latlng); circle.setRadius(zone.radius); circle.setStyle(opts); }
       }
-
       for (const [id, marker] of state.mapObjects.noFireMarkers.entries()) {
-        if (!state.noFireZones.some(z => z.id === id)) {
-          map.removeLayer(marker);
-          state.mapObjects.noFireMarkers.delete(id);
-        }
+        if (!state.noFireZones.some(z => z.id === id)) { map.removeLayer(marker); state.mapObjects.noFireMarkers.delete(id); }
       }
       for (const [id, circle] of state.mapObjects.noFireCircles.entries()) {
-        if (!state.noFireZones.some(z => z.id === id)) {
-          map.removeLayer(circle);
-          state.mapObjects.noFireCircles.delete(id);
-        }
+        if (!state.noFireZones.some(z => z.id === id)) { map.removeLayer(circle); state.mapObjects.noFireCircles.delete(id); }
       }
-
       const target = getActiveTarget();
       if (state.launcher && target) {
         const latlngs = [[state.launcher.lat, state.launcher.lng], [target.lat, target.lng]];
-        if (!state.mapObjects.rangeLine) {
-          state.mapObjects.rangeLine = L.polyline(latlngs, { color: "#b8c77b", weight: 2, opacity: .8, dashArray: "10 9" }).addTo(map);
-        } else {
-          state.mapObjects.rangeLine.setLatLngs(latlngs);
-        }
+        if (!state.mapObjects.rangeLine) state.mapObjects.rangeLine = L.polyline(latlngs, { color: "#b8c77b", weight: 2, opacity: .8, dashArray: "10 9" }).addTo(map);
+        else state.mapObjects.rangeLine.setLatLngs(latlngs);
       } else if (state.mapObjects.rangeLine) {
         map.removeLayer(state.mapObjects.rangeLine);
         state.mapObjects.rangeLine = null;
@@ -932,17 +710,13 @@
     function renderReadout() {
       const target = getActiveTarget();
       els.radiusOut.textContent = target ? Math.round(target.radius) : (Number(els.hitRadius.value) || 25);
-
       if (state.launcher && target) {
-        const dist = distanceMeters(state.launcher, target);
-        const bear = bearingDeg(state.launcher, target);
-        els.rangeOut.textContent = formatMeters(dist);
-        els.bearingOut.textContent = formatBearing(bear);
+        els.rangeOut.textContent = formatMeters(distanceMeters(state.launcher, target));
+        els.bearingOut.textContent = formatBearing(bearingDeg(state.launcher, target));
       } else {
         els.rangeOut.textContent = "---";
         els.bearingOut.textContent = "---";
       }
-
       const safety = evaluateSafety();
       els.safetyText.textContent = safety.text;
       els.safetyDot.className = `dot ${safety.level}`;
@@ -950,83 +724,56 @@
 
     function renderLists() {
       els.targetList.innerHTML = "";
-      if (!state.targets.length) {
-        els.targetList.innerHTML = `<div class="notice">No targets yet. Tap “Add Target”, then tap the map.</div>`;
-      } else {
+      if (!state.targets.length) els.targetList.innerHTML = `<div class="notice">No targets yet. Tap â€œAdd Targetâ€, then tap the map.</div>`;
+      else {
         for (const t of state.targets) {
           const item = document.createElement("div");
           item.className = `list-item ${t.id === state.activeTargetId ? "active" : ""}`;
-          item.innerHTML = `
-            <div>
-              <div class="list-title">${escapeHtml(t.name)}</div>
-              <div class="list-meta">${escapeHtml(t.roundType)} · ${Math.round(t.radius)} m radius</div>
-            </div>
-            <button class="small">Select</button>
-          `;
-          item.querySelector("button").onclick = () => {
-            state.activeTargetId = t.id;
-            loadTargetIntoForm(t);
-            renderAll();
-          };
+          item.innerHTML = `<div><div class="list-title">${escapeHtml(t.name)}</div><div class="list-meta">${escapeHtml(t.roundType)} Â· ${Math.round(t.radius)} m radius</div></div><button class="small">Select</button>`;
+          item.querySelector("button").onclick = () => { state.activeTargetId = t.id; loadTargetIntoForm(t); renderAll(); };
           els.targetList.appendChild(item);
         }
       }
-
       els.zoneList.innerHTML = "";
-      if (!state.noFireZones.length) {
-        els.zoneList.innerHTML = `<div class="notice">No no-fire zones added.</div>`;
-      } else {
+      if (!state.noFireZones.length) els.zoneList.innerHTML = `<div class="notice">No no-fire zones added.</div>`;
+      else {
         for (const z of state.noFireZones) {
           const item = document.createElement("div");
           item.className = "list-item";
-          item.innerHTML = `
-            <div>
-              <div class="list-title">${escapeHtml(z.name)}</div>
-              <div class="list-meta">${Math.round(z.radius)} m radius</div>
-            </div>
-            <button class="small danger">Remove</button>
-          `;
-          item.querySelector("button").onclick = () => {
-            state.noFireZones = state.noFireZones.filter(zone => zone.id !== z.id);
-            renderAll();
-          };
+          item.innerHTML = `<div><div class="list-title">${escapeHtml(z.name)}</div><div class="list-meta">${Math.round(z.radius)} m radius</div></div><button class="small danger">Remove</button>`;
+          item.querySelector("button").onclick = () => { state.noFireZones = state.noFireZones.filter(zone => zone.id !== z.id); renderAll(); };
           els.zoneList.appendChild(item);
         }
       }
-
       els.logList.innerHTML = "";
-      if (!state.log.length) {
-        els.logList.innerHTML = `<div class="notice">No logged missions yet.</div>`;
-      } else {
+      if (!state.log.length) els.logList.innerHTML = `<div class="notice">No logged missions yet.</div>`;
+      else {
         for (const entry of [...state.log].reverse()) {
           const item = document.createElement("div");
           item.className = "list-item";
-          item.innerHTML = `
-            <div>
-              <div class="list-title">${escapeHtml(entry.targetName)} · ${escapeHtml(entry.roundType)}</div>
-              <div class="list-meta">${entry.rangeM} m · ${entry.bearingDeg}°T · ${new Date(entry.time).toLocaleString()}</div>
-            </div>
-            <button class="small">Copy</button>
-          `;
+          item.innerHTML = `<div><div class="list-title">${escapeHtml(entry.targetName)} Â· ${escapeHtml(entry.roundType)}</div><div class="list-meta">${entry.rangeM} m Â· ${entry.bearingDeg}Â°T Â· ${new Date(entry.time).toLocaleString()}</div></div><button class="small">Copy</button>`;
           item.querySelector("button").onclick = () => copyText(entry.radioCall);
           els.logList.appendChild(item);
         }
       }
     }
 
+    function renderFieldInfo() {
+      if (!state.fieldArea.length) return els.fieldAreaInfo.textContent = "No field area drawn.";
+      if (state.fieldAreaClosed) els.fieldAreaInfo.textContent = `Field area finished with ${state.fieldArea.length} points. Outside-field warnings are active.`;
+      else els.fieldAreaInfo.textContent = `${state.fieldArea.length} field point${state.fieldArea.length === 1 ? "" : "s"} placed. Add corners in order, then tap Finish Field.`;
+    }
+
     function buildRadioCall() {
       const target = getActiveTarget();
-      if (!state.launcher || !target) {
-        return "Set launcher and target to generate a radio call.";
-      }
+      if (!state.launcher || !target) return "Set launcher and target to generate a radio call.";
       const dist = Math.round(distanceMeters(state.launcher, target));
       const bear = formatBearing(bearingDeg(state.launcher, target));
       const safety = evaluateSafety();
       const auth = target.authCode ? target.authCode : "[AUTH/CARD]";
       const desc = target.description ? target.description : "[TARGET DESCRIPTION]";
-
       return [
-        `FIRE MISSION REQUEST`,
+        "FIRE MISSION REQUEST",
         `AUTH: ${auth}`,
         `TARGET: ${target.name}`,
         `DESCRIPTION: ${desc}`,
@@ -1035,24 +782,19 @@
         `MAP AZIMUTH: ${bear} degrees true`,
         `LIKELY HIT RADIUS: ${Math.round(target.radius)} meters`,
         `SAFETY CHECK: ${safety.text}`,
-        `STAFF FINAL APPROVAL REQUIRED`
+        "STAFF FINAL APPROVAL REQUIRED"
       ].join("\n");
     }
 
-    function renderRadioCall() {
-      els.radioCall.value = buildRadioCall();
-    }
-
-    function renderAll() {
-      renderMapObjects();
-      renderReadout();
-      renderLists();
-      renderRadioCall();
-    }
+    function renderRadioCall() { els.radioCall.value = buildRadioCall(); }
+    function renderAll() { renderMapObjects(); renderReadout(); renderLists(); renderFieldInfo(); renderRadioCall(); }
 
     function saveState() {
       const payload = {
         launcher: state.launcher,
+        currentLocation: state.currentLocation,
+        fieldArea: state.fieldArea,
+        fieldAreaClosed: state.fieldAreaClosed,
         targets: state.targets,
         activeTargetId: state.activeTargetId,
         noFireZones: state.noFireZones,
@@ -1068,17 +810,18 @@
         if (!raw) return;
         const data = JSON.parse(raw);
         state.launcher = data.launcher || null;
+        state.currentLocation = data.currentLocation || null;
+        state.fieldArea = Array.isArray(data.fieldArea) ? data.fieldArea : [];
+        state.fieldAreaClosed = Boolean(data.fieldAreaClosed);
         state.targets = Array.isArray(data.targets) ? data.targets : [];
         state.activeTargetId = data.activeTargetId || (state.targets[0] && state.targets[0].id) || null;
         state.noFireZones = Array.isArray(data.noFireZones) ? data.noFireZones : [];
         state.log = Array.isArray(data.log) ? data.log : [];
-
         if (state.launcher) setLauncher(state.launcher, state.launcher.source || "saved");
+        if (state.currentLocation) setCurrentLocation(state.currentLocation, state.currentLocation.accuracy);
         const target = getActiveTarget();
         if (target) loadTargetIntoForm(target);
-      } catch (err) {
-        console.warn(err);
-      }
+      } catch (err) { console.warn(err); }
     }
 
     function logMission() {
@@ -1108,12 +851,8 @@
     }
 
     function exportCSV() {
-      const rows = [
-        ["time", "target", "round_type", "auth_code", "range_m", "azimuth_true", "hit_radius_m", "safety", "launcher_lat", "launcher_lng", "target_lat", "target_lng", "description"]
-      ];
-      for (const e of state.log) {
-        rows.push([e.time, e.targetName, e.roundType, e.authCode, e.rangeM, e.bearingDeg, e.hitRadiusM, e.safety, e.launcherLat, e.launcherLng, e.targetLat, e.targetLng, e.description]);
-      }
+      const rows = [["time", "target", "round_type", "auth_code", "range_m", "azimuth_true", "hit_radius_m", "safety", "launcher_lat", "launcher_lng", "target_lat", "target_lng", "description"]];
+      for (const e of state.log) rows.push([e.time, e.targetName, e.roundType, e.authCode, e.rangeM, e.bearingDeg, e.hitRadiusM, e.safety, e.launcherLat, e.launcherLng, e.targetLat, e.targetLng, e.description]);
       const csv = rows.map(row => row.map(cell => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(",")).join("\n");
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
       const url = URL.createObjectURL(blob);
@@ -1128,13 +867,9 @@
     }
 
     function copyText(text) {
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text).then(() => showToast("Copied"), () => fallbackCopy(text));
-      } else {
-        fallbackCopy(text);
-      }
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(() => showToast("Copied"), () => fallbackCopy(text));
+      else fallbackCopy(text);
     }
-
     function fallbackCopy(text) {
       const area = document.createElement("textarea");
       area.value = text;
@@ -1145,16 +880,11 @@
       showToast("Copied");
     }
 
-    function escapeHtml(str) {
-      return String(str ?? "").replace(/[&<>'"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[c]));
-    }
-
     function centerOnTarget() {
       const target = getActiveTarget();
       if (!target) return showToast("No active target selected");
       map.setView([target.lat, target.lng], Math.max(map.getZoom(), 17));
     }
-
     function deleteActiveTarget() {
       const target = getActiveTarget();
       if (!target) return showToast("No active target selected");
@@ -1165,62 +895,80 @@
       showToast("Target deleted");
     }
 
-    function useGPS() {
+    function getPhoneLocation(onSuccess, onDone) {
       if (!navigator.geolocation) {
         showToast("GPS not available in this browser");
+        if (onDone) onDone();
         return;
       }
-      els.gpsBtn.textContent = "Locating...";
       navigator.geolocation.getCurrentPosition(
         pos => {
           const latlng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-          setLauncher(latlng, "gps");
-          map.setView([latlng.lat, latlng.lng], 17);
-          els.gpsBtn.textContent = "Use GPS";
-          showToast(`GPS set ±${Math.round(pos.coords.accuracy)} m`);
+          onSuccess(latlng, pos.coords.accuracy);
+          if (onDone) onDone();
         },
         err => {
-          els.gpsBtn.textContent = "Use GPS";
           showToast(err.message || "GPS permission denied");
+          if (onDone) onDone();
         },
         { enableHighAccuracy: true, timeout: 9000, maximumAge: 5000 }
       );
+    }
+    function showMeOnMap() {
+      els.showMeBtn.textContent = "Locating...";
+      getPhoneLocation((latlng, accuracy) => {
+        setCurrentLocation(latlng, accuracy);
+        map.setView([latlng.lat, latlng.lng], 17);
+        showToast(`Current location shown Â±${Math.round(accuracy)} m`);
+      }, () => els.showMeBtn.textContent = "Show Me");
+    }
+    function useGPS() {
+      els.gpsBtn.textContent = "Locating...";
+      getPhoneLocation((latlng, accuracy) => {
+        setLauncher(latlng, "gps");
+        setCurrentLocation(latlng, accuracy);
+        map.setView([latlng.lat, latlng.lng], 17);
+        showToast(`Launcher set from GPS Â±${Math.round(accuracy)} m`);
+      }, () => els.gpsBtn.textContent = "Set Launch GPS");
     }
 
     map.on("click", e => {
       if (state.tool === "launcher") setLauncher(e.latlng, "manual");
       if (state.tool === "target") addTarget(e.latlng);
       if (state.tool === "nofire") addNoFireZone(e.latlng);
+      if (state.tool === "field") addFieldPoint(e.latlng);
     });
 
     els.toolLauncher.onclick = () => setTool("launcher");
     els.toolTarget.onclick = () => setTool("target");
     els.toolNoFire.onclick = () => setTool("nofire");
+    els.toolField.onclick = () => setTool("field");
+    els.showMeBtn.onclick = showMeOnMap;
     els.gpsBtn.onclick = useGPS;
     els.saveBtn.onclick = saveState;
     els.exportBtn.onclick = exportCSV;
     els.applyTargetBtn.onclick = updateActiveTargetFromForm;
     els.centerTargetBtn.onclick = centerOnTarget;
     els.deleteTargetBtn.onclick = deleteActiveTarget;
+    els.finishFieldBtn.onclick = finishFieldArea;
+    els.undoFieldBtn.onclick = undoFieldPoint;
+    els.clearFieldBtn.onclick = clearFieldArea;
     els.clearZonesBtn.onclick = () => { state.noFireZones = []; renderAll(); showToast("No-fire zones cleared"); };
     els.copyCallBtn.onclick = () => copyText(els.radioCall.value);
     els.logMissionBtn.onclick = logMission;
     els.clearLogBtn.onclick = () => { state.log = []; saveState(); renderAll(); showToast("Mission log cleared"); };
-
-    els.hitRadius.onchange = () => {
-      els.radiusOut.textContent = Number(els.hitRadius.value) || 25;
-    };
+    els.hitRadius.onchange = () => { els.radiusOut.textContent = Number(els.hitRadius.value) || 25; };
 
     function refitMapToData() {
       const points = [];
       if (state.launcher) points.push([state.launcher.lat, state.launcher.lng]);
+      if (state.currentLocation) points.push([state.currentLocation.lat, state.currentLocation.lng]);
+      for (const p of state.fieldArea) points.push([p.lat, p.lng]);
       for (const t of state.targets) points.push([t.lat, t.lng]);
       for (const z of state.noFireZones) points.push([z.lat, z.lng]);
-
       if (points.length >= 2) map.fitBounds(points, { padding: [40, 40], maxZoom: 17 });
       else if (points.length === 1) map.setView(points[0], 17);
     }
-
     function refreshMapSize(refit = false) {
       requestAnimationFrame(() => {
         map.invalidateSize({ animate: false, pan: false });
@@ -1230,20 +978,14 @@
 
     loadState();
     renderAll();
-
-    // Leaflet can render partial/tiled gray squares if the map is initialized
-    // before the browser, iframe, or mobile viewport finishes sizing.
-    // These calls force Leaflet to re-check the real container size.
     refreshMapSize(true);
     setTimeout(() => refreshMapSize(true), 250);
     setTimeout(() => refreshMapSize(true), 900);
-
     if ("ResizeObserver" in window) {
       const resizeObserver = new ResizeObserver(() => refreshMapSize(false));
       resizeObserver.observe(document.getElementById("mapWrap"));
       resizeObserver.observe(document.getElementById("app"));
     }
-
     window.addEventListener("resize", () => refreshMapSize(false));
     window.addEventListener("orientationchange", () => setTimeout(() => refreshMapSize(true), 350));
   </script>
