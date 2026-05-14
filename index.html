@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>SBM-26 Fire Mission Map</title>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIINfQVLK8C+M1zZzyWGm4p6qJ1B2/k2E0o="
+    crossorigin=""
+  />
+
+  <style>
+    :root {
+      --bg: #11150f;
+      --panel: #1a2118;
+      --panel-2: #222b1f;
+      --line: #3f4c37;
+      --text: #e7eadb;
+      --muted: #a9b49d;
+      --accent: #b8c77b;
+      --danger: #d96852;
+      --warn: #d6ad55;
+      --ok: #8fbf72;
+      --blue: #70a8d8;
+      --shadow: rgba(0,0,0,.45);
+      --radius: 16px;
+      --safe-area-top: env(safe-area-inset-top, 0px);
+      --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { overflow: hidden; }
+
+    #app {
+      height: 100vh;
+      width: 100vw;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      background:
+        radial-gradient(circle at top left, rgba(184,199,123,.16), transparent 30%),
+        linear-gradient(135deg, #0f130d 0%, #181e15 100%);
+    }
+
+    header {
+      padding: calc(10px + var(--safe-area-top)) 12px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: rgba(17,21,15,.88);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(8px);
+      z-index: 20;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.05;
+      min-width: 0;
+    }
+
+    .brand .title {
+      font-weight: 800;
+      letter-spacing: .06em;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .brand .subtitle {
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 70vw;
+    }
+
+    .header-actions { display: flex; gap: 7px; flex-shrink: 0; }
+
+    button, select, input, textarea {
+      font: inherit;
+      color: var(--text);
+    }
+
+    button {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, #2a3325, #1b2319);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 8px 11px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+      transition: transform .08s ease, border-color .12s ease, background .12s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:active { transform: scale(.97); }
+    button.primary { border-color: rgba(184,199,123,.8); background: linear-gradient(180deg, #536234, #323c24); }
+    button.danger { border-color: rgba(217,104,82,.75); background: linear-gradient(180deg, #5c2d25, #331b18); }
+    button.ghost { background: rgba(24,30,21,.76); box-shadow: none; }
+    button.selected { outline: 2px solid rgba(184,199,123,.5); background: #3a472c; }
+    button.small { font-size: 12px; padding: 6px 9px; }
+    button.full { width: 100%; justify-content: center; }
+
+    #mapWrap { position: relative; min-height: 0; }
+    #map { height: 100%; width: 100%; background: #202a1c; z-index: 1; }
+
+    .leaflet-control-attribution { font-size: 9px !important; background: rgba(255,255,255,.65) !important; }
+    .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #1b2319; color: var(--text); border: 1px solid var(--line); }
+    .leaflet-popup-content { margin: 10px 12px; font-size: 12px; }
+
+    .status-chip {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(17,21,15,.86);
+      box-shadow: 0 10px 25px var(--shadow);
+      backdrop-filter: blur(8px);
+      font-size: 12px;
+      max-width: calc(100% - 20px);
+    }
+
+    .dot { width: 9px; height: 9px; border-radius: 999px; background: var(--muted); flex: 0 0 9px; }
+    .dot.ok { background: var(--ok); box-shadow: 0 0 12px rgba(143,191,114,.8); }
+    .dot.warn { background: var(--warn); box-shadow: 0 0 12px rgba(214,173,85,.8); }
+    .dot.danger { background: var(--danger); box-shadow: 0 0 12px rgba(217,104,82,.8); }
+
+    .toolbox {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      z-index: 10;
+      display: grid;
+      gap: 7px;
+      max-width: 44vw;
+    }
+
+    .toolbox button { text-align: left; font-size: 12px; padding: 8px 10px; }
+
+    .crosshair {
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      background: var(--blue);
+      border: 2px solid white;
+      box-shadow: 0 0 0 2px rgba(112,168,216,.45), 0 0 16px rgba(112,168,216,.8);
+    }
+
+    .target-pin {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px 999px 999px 0;
+      transform: rotate(-45deg);
+      background: var(--danger);
+      border: 2px solid #fff1e8;
+      box-shadow: 0 0 0 2px rgba(217,104,82,.35), 0 4px 14px rgba(0,0,0,.45);
+    }
+    .target-pin::after {
+      content: "";
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      left: 6px;
+      top: 6px;
+      background: #fff1e8;
+    }
+
+    .nofire-pin {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      background: var(--warn);
+      border: 2px solid #fff7de;
+      box-shadow: 0 0 0 2px rgba(214,173,85,.35), 0 4px 14px rgba(0,0,0,.45);
+      transform: rotate(45deg);
+    }
+
+    #panel {
+      max-height: 52vh;
+      min-height: 192px;
+      overflow: auto;
+      padding: 10px 10px calc(10px + var(--safe-area-bottom));
+      background: rgba(17,21,15,.96);
+      border-top: 1px solid var(--line);
+      box-shadow: 0 -16px 38px rgba(0,0,0,.38);
+      z-index: 20;
+    }
+
+    .grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .cols {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, rgba(34,43,31,.95), rgba(24,31,22,.95));
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.18);
+    }
+
+    .card h2, .card h3 {
+      margin: 0 0 8px;
+      font-size: 13px;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .readout {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .metric {
+      padding: 9px;
+      border: 1px solid rgba(63,76,55,.85);
+      border-radius: 12px;
+      background: rgba(17,21,15,.55);
+      min-height: 62px;
+    }
+
+    .metric .label {
+      font-size: 10px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .metric .value {
+      font-size: clamp(18px, 5vw, 28px);
+      font-weight: 800;
+      margin-top: 3px;
+      white-space: nowrap;
+    }
+
+    .metric .unit { font-size: 12px; color: var(--muted); margin-left: 2px; }
+
+    label {
+      display: grid;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: rgba(9,12,8,.72);
+      border-radius: 10px;
+      padding: 9px;
+      color: var(--text);
+      outline: none;
+    }
+
+    textarea { min-height: 94px; resize: vertical; line-height: 1.35; text-transform: none; letter-spacing: normal; font-size: 12px; }
+    input:focus, select:focus, textarea:focus { border-color: rgba(184,199,123,.85); box-shadow: 0 0 0 2px rgba(184,199,123,.14); }
+
+    .button-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .button-row button { flex: 1 1 auto; }
+
+    .list {
+      display: grid;
+      gap: 7px;
+      max-height: 145px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .list-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(17,21,15,.45);
+    }
+
+    .list-item.active { border-color: rgba(184,199,123,.8); background: rgba(83,98,52,.35); }
+    .list-title { font-size: 12px; font-weight: 700; }
+    .list-meta { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+    .notice {
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .safety-ok { color: var(--ok); }
+    .safety-warn { color: var(--warn); }
+    .safety-danger { color: var(--danger); }
+
+    .divider { height: 1px; background: var(--line); margin: 8px 0; opacity: .75; }
+
+    .hidden { display: none !important; }
+
+    .toast {
+      position: absolute;
+      left: 50%;
+      bottom: calc(210px + var(--safe-area-bottom));
+      transform: translateX(-50%);
+      z-index: 30;
+      background: rgba(9,12,8,.9);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 9px 13px;
+      font-size: 12px;
+      box-shadow: 0 14px 28px rgba(0,0,0,.35);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .15s ease, transform .15s ease;
+      white-space: nowrap;
+      max-width: calc(100vw - 24px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(-6px); }
+
+    @media (min-width: 820px) {
+      #app {
+        grid-template-rows: auto 1fr;
+        grid-template-columns: 1fr 390px;
+      }
+      header { grid-column: 1 / -1; }
+      #mapWrap { grid-column: 1; grid-row: 2; }
+      #panel {
+        grid-column: 2;
+        grid-row: 2;
+        max-height: none;
+        height: 100%;
+        border-top: 0;
+        border-left: 1px solid var(--line);
+      }
+      .toast { bottom: 24px; }
+    }
+
+    @media (max-width: 420px) {
+      .header-actions button { font-size: 12px; padding: 7px 8px; }
+      .readout { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .metric { padding: 7px; min-height: 58px; }
+      .metric .value { font-size: 18px; }
+      .toolbox { top: 52px; max-width: 55vw; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header>
+      <div class="brand">
+        <div class="title">SBM-26 FIRE MISSION MAP</div>
+        <div class="subtitle">Internal safety visualization and mission logging aid</div>
+      </div>
+      <div class="header-actions">
+        <button id="gpsBtn" class="primary small">Use GPS</button>
+        <button id="saveBtn" class="small">Save</button>
+        <button id="exportBtn" class="small">CSV</button>
+      </div>
+    </header>
+
+    <section id="mapWrap">
+      <div id="map"></div>
+      <div class="status-chip" id="statusChip">
+        <span class="dot warn" id="safetyDot"></span>
+        <span id="safetyText">Set launcher and target</span>
+      </div>
+      <div class="toolbox">
+        <button id="toolLauncher" class="selected">Set Launcher</button>
+        <button id="toolTarget">Add Target</button>
+        <button id="toolNoFire">Add No-Fire Zone</button>
+      </div>
+      <div class="toast" id="toast"></div>
+    </section>
+
+    <aside id="panel" class="grid">
+      <div class="card">
+        <h2>Mission Readout</h2>
+        <div class="readout">
+          <div class="metric">
+            <div class="label">Range</div>
+            <div class="value"><span id="rangeOut">---</span><span class="unit">m</span></div>
+          </div>
+          <div class="metric">
+            <div class="label">Azimuth</div>
+            <div class="value"><span id="bearingOut">---</span><span class="unit">°T</span></div>
+          </div>
+          <div class="metric">
+            <div class="label">Hit Radius</div>
+            <div class="value"><span id="radiusOut">25</span><span class="unit">m</span></div>
+          </div>
+        </div>
+        <p class="notice" style="margin: 8px 0 0;">This app is for event coordination, safety checks, and logging only. It does not calculate launch settings.</p>
+      </div>
+
+      <div class="card grid">
+        <h3>Active Target</h3>
+        <div class="cols">
+          <label>Target Name
+            <input id="targetName" value="ALPHA-1" />
+          </label>
+          <label>Round Type
+            <select id="roundType">
+              <option>BB</option>
+              <option>Visible Illumination</option>
+              <option>IR Illumination</option>
+              <option>Leaflet / Staff</option>
+              <option>Training / Dry Run</option>
+            </select>
+          </label>
+        </div>
+        <div class="cols">
+          <label>Likely Hit Radius
+            <select id="hitRadius">
+              <option value="15">15 m - Tight</option>
+              <option value="25" selected>25 m - Normal</option>
+              <option value="40">40 m - Loose</option>
+              <option value="60">60 m - Safety</option>
+            </select>
+          </label>
+          <label>Auth / Card ID
+            <input id="authCode" placeholder="Example: GC-1047" />
+          </label>
+        </div>
+        <label>Target Description
+          <input id="targetDesc" placeholder="Example: squad near plywood bunker" />
+        </label>
+        <div class="button-row">
+          <button id="applyTargetBtn" class="primary">Apply Target Data</button>
+          <button id="centerTargetBtn">Center Target</button>
+          <button id="deleteTargetBtn" class="danger">Delete Target</button>
+        </div>
+      </div>
+
+      <div class="card grid">
+        <h3>Targets</h3>
+        <div id="targetList" class="list"></div>
+      </div>
+
+      <div class="card grid">
+        <h3>No-Fire Zones</h3>
+        <p class="notice" style="margin:0;">Use simple circular zones for staging, parking, buildings, spectators, roads, or anything that should never overlap the hit area.</p>
+        <div class="cols">
+          <label>Zone Radius
+            <select id="zoneRadius">
+              <option value="20">20 m</option>
+              <option value="40" selected>40 m</option>
+              <option value="60">60 m</option>
+              <option value="100">100 m</option>
+            </select>
+          </label>
+          <label>Zone Name
+            <input id="zoneName" value="NO-FIRE" />
+          </label>
+        </div>
+        <div class="button-row">
+          <button id="clearZonesBtn">Clear Zones</button>
+        </div>
+        <div id="zoneList" class="list"></div>
+      </div>
+
+      <div class="card grid">
+        <h3>Radio Call Builder</h3>
+        <textarea id="radioCall" readonly></textarea>
+        <div class="button-row">
+          <button id="copyCallBtn" class="primary">Copy Call</button>
+          <button id="logMissionBtn">Log Mission</button>
+        </div>
+      </div>
+
+      <div class="card grid">
+        <h3>Mission Log</h3>
+        <div id="logList" class="list"></div>
+        <div class="button-row">
+          <button id="clearLogBtn" class="danger">Clear Log</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+
+  <script>
+    const STORAGE_KEY = "sbm26_fire_map_v1";
+
+    const state = {
+      tool: "launcher",
+      launcher: null,
+      targets: [],
+      activeTargetId: null,
+      noFireZones: [],
+      log: [],
+      mapObjects: {
+        launcherMarker: null,
+        targetMarkers: new Map(),
+        targetCircles: new Map(),
+        noFireMarkers: new Map(),
+        noFireCircles: new Map(),
+        rangeLine: null
+      }
+    };
+
+    const els = {
+      gpsBtn: document.getElementById("gpsBtn"),
+      saveBtn: document.getElementById("saveBtn"),
+      exportBtn: document.getElementById("exportBtn"),
+      toolLauncher: document.getElementById("toolLauncher"),
+      toolTarget: document.getElementById("toolTarget"),
+      toolNoFire: document.getElementById("toolNoFire"),
+      statusChip: document.getElementById("statusChip"),
+      safetyDot: document.getElementById("safetyDot"),
+      safetyText: document.getElementById("safetyText"),
+      rangeOut: document.getElementById("rangeOut"),
+      bearingOut: document.getElementById("bearingOut"),
+      radiusOut: document.getElementById("radiusOut"),
+      targetName: document.getElementById("targetName"),
+      roundType: document.getElementById("roundType"),
+      hitRadius: document.getElementById("hitRadius"),
+      authCode: document.getElementById("authCode"),
+      targetDesc: document.getElementById("targetDesc"),
+      applyTargetBtn: document.getElementById("applyTargetBtn"),
+      centerTargetBtn: document.getElementById("centerTargetBtn"),
+      deleteTargetBtn: document.getElementById("deleteTargetBtn"),
+      targetList: document.getElementById("targetList"),
+      zoneRadius: document.getElementById("zoneRadius"),
+      zoneName: document.getElementById("zoneName"),
+      clearZonesBtn: document.getElementById("clearZonesBtn"),
+      zoneList: document.getElementById("zoneList"),
+      radioCall: document.getElementById("radioCall"),
+      copyCallBtn: document.getElementById("copyCallBtn"),
+      logMissionBtn: document.getElementById("logMissionBtn"),
+      logList: document.getElementById("logList"),
+      clearLogBtn: document.getElementById("clearLogBtn"),
+      toast: document.getElementById("toast")
+    };
+
+    const launcherIcon = L.divIcon({ className: "", html: "<div class='crosshair'></div>", iconSize: [24, 24], iconAnchor: [12, 12] });
+    const targetIcon = L.divIcon({ className: "", html: "<div class='target-pin'></div>", iconSize: [28, 28], iconAnchor: [14, 26] });
+    const noFireIcon = L.divIcon({ className: "", html: "<div class='nofire-pin'></div>", iconSize: [22, 22], iconAnchor: [11, 11] });
+
+    const map = L.map("map", {
+      zoomControl: false,
+      preferCanvas: true
+    }).setView([38.25, -77.0], 13);
+
+    L.control.zoom({ position: "bottomleft" }).addTo(map);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 20,
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    function uid(prefix) {
+      return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+    }
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => els.toast.classList.remove("show"), 1900);
+    }
+
+    function toRad(deg) { return deg * Math.PI / 180; }
+    function toDeg(rad) { return rad * 180 / Math.PI; }
+
+    function distanceMeters(a, b) {
+      const R = 6371008.8;
+      const lat1 = toRad(a.lat), lat2 = toRad(b.lat);
+      const dLat = toRad(b.lat - a.lat);
+      const dLng = toRad(b.lng - a.lng);
+      const sinDLat = Math.sin(dLat / 2);
+      const sinDLng = Math.sin(dLng / 2);
+      const h = sinDLat * sinDLat + Math.cos(lat1) * Math.cos(lat2) * sinDLng * sinDLng;
+      return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+    }
+
+    function bearingDeg(a, b) {
+      const lat1 = toRad(a.lat), lat2 = toRad(b.lat);
+      const dLng = toRad(b.lng - a.lng);
+      const y = Math.sin(dLng) * Math.cos(lat2);
+      const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng);
+      return (toDeg(Math.atan2(y, x)) + 360) % 360;
+    }
+
+    function formatMeters(m) {
+      if (!Number.isFinite(m)) return "---";
+      return m < 1000 ? Math.round(m).toString() : (m / 1000).toFixed(2) + "k";
+    }
+
+    function formatBearing(b) {
+      if (!Number.isFinite(b)) return "---";
+      return String(Math.round(b)).padStart(3, "0");
+    }
+
+    function getActiveTarget() {
+      return state.targets.find(t => t.id === state.activeTargetId) || null;
+    }
+
+    function setTool(tool) {
+      state.tool = tool;
+      els.toolLauncher.classList.toggle("selected", tool === "launcher");
+      els.toolTarget.classList.toggle("selected", tool === "target");
+      els.toolNoFire.classList.toggle("selected", tool === "nofire");
+      showToast(tool === "launcher" ? "Tap map to set launcher" : tool === "target" ? "Tap map to add target" : "Tap map to add no-fire zone");
+    }
+
+    function setLauncher(latlng, source = "manual") {
+      state.launcher = { lat: latlng.lat, lng: latlng.lng, source, updatedAt: new Date().toISOString() };
+      if (!state.mapObjects.launcherMarker) {
+        state.mapObjects.launcherMarker = L.marker(latlng, { icon: launcherIcon, draggable: true }).addTo(map);
+        state.mapObjects.launcherMarker.on("dragend", () => {
+          const ll = state.mapObjects.launcherMarker.getLatLng();
+          setLauncher(ll, "dragged");
+        });
+      } else {
+        state.mapObjects.launcherMarker.setLatLng(latlng);
+      }
+      renderAll();
+    }
+
+    function addTarget(latlng) {
+      const index = state.targets.length + 1;
+      const target = {
+        id: uid("target"),
+        name: `ALPHA-${index}`,
+        lat: latlng.lat,
+        lng: latlng.lng,
+        radius: Number(els.hitRadius.value) || 25,
+        roundType: els.roundType.value || "BB",
+        authCode: els.authCode.value.trim(),
+        description: els.targetDesc.value.trim(),
+        createdAt: new Date().toISOString()
+      };
+      state.targets.push(target);
+      state.activeTargetId = target.id;
+      loadTargetIntoForm(target);
+      renderAll();
+    }
+
+    function updateActiveTargetFromForm() {
+      const target = getActiveTarget();
+      if (!target) return showToast("No active target selected");
+      target.name = els.targetName.value.trim() || target.name;
+      target.radius = Number(els.hitRadius.value) || 25;
+      target.roundType = els.roundType.value;
+      target.authCode = els.authCode.value.trim();
+      target.description = els.targetDesc.value.trim();
+      renderAll();
+      showToast("Target updated");
+    }
+
+    function loadTargetIntoForm(target) {
+      if (!target) {
+        els.targetName.value = "ALPHA-1";
+        els.roundType.value = "BB";
+        els.hitRadius.value = "25";
+        els.authCode.value = "";
+        els.targetDesc.value = "";
+        return;
+      }
+      els.targetName.value = target.name || "";
+      els.roundType.value = target.roundType || "BB";
+      els.hitRadius.value = String(target.radius || 25);
+      els.authCode.value = target.authCode || "";
+      els.targetDesc.value = target.description || "";
+    }
+
+    function addNoFireZone(latlng) {
+      const zone = {
+        id: uid("zone"),
+        name: els.zoneName.value.trim() || "NO-FIRE",
+        lat: latlng.lat,
+        lng: latlng.lng,
+        radius: Number(els.zoneRadius.value) || 40,
+        createdAt: new Date().toISOString()
+      };
+      state.noFireZones.push(zone);
+      renderAll();
+    }
+
+    function circlesOverlap(a, ar, b, br) {
+      return distanceMeters(a, b) <= (ar + br);
+    }
+
+    function evaluateSafety() {
+      const target = getActiveTarget();
+      if (!state.launcher || !target) {
+        return { level: "warn", text: "Set launcher and target" };
+      }
+
+      const targetPoint = { lat: target.lat, lng: target.lng };
+      const overlappingZones = state.noFireZones.filter(z => circlesOverlap(targetPoint, target.radius, { lat: z.lat, lng: z.lng }, z.radius));
+
+      if (overlappingZones.length) {
+        return { level: "danger", text: `NO FIRE: hit area overlaps ${overlappingZones[0].name}` };
+      }
+
+      if (target.radius >= 60) {
+        return { level: "warn", text: "CAUTION: wide hit-radius selected" };
+      }
+
+      return { level: "ok", text: "CLEAR: no zone overlap detected" };
+    }
+
+    function renderMapObjects() {
+      for (const target of state.targets) {
+        const latlng = [target.lat, target.lng];
+        let marker = state.mapObjects.targetMarkers.get(target.id);
+        if (!marker) {
+          marker = L.marker(latlng, { icon: targetIcon, draggable: true }).addTo(map);
+          marker.on("click", () => {
+            state.activeTargetId = target.id;
+            loadTargetIntoForm(target);
+            renderAll();
+          });
+          marker.on("dragend", () => {
+            const ll = marker.getLatLng();
+            target.lat = ll.lat;
+            target.lng = ll.lng;
+            renderAll();
+          });
+          state.mapObjects.targetMarkers.set(target.id, marker);
+        } else {
+          marker.setLatLng(latlng);
+        }
+        marker.bindPopup(`<b>${escapeHtml(target.name)}</b><br>${Math.round(target.radius)} m likely-hit radius`);
+
+        let circle = state.mapObjects.targetCircles.get(target.id);
+        const isActive = target.id === state.activeTargetId;
+        const circleOpts = {
+          radius: target.radius,
+          color: isActive ? "#d96852" : "#b07c66",
+          fillColor: isActive ? "#d96852" : "#b07c66",
+          fillOpacity: isActive ? 0.2 : 0.11,
+          weight: isActive ? 2 : 1,
+          dashArray: isActive ? null : "6 6"
+        };
+        if (!circle) {
+          circle = L.circle(latlng, circleOpts).addTo(map);
+          circle.on("click", () => {
+            state.activeTargetId = target.id;
+            loadTargetIntoForm(target);
+            renderAll();
+          });
+          state.mapObjects.targetCircles.set(target.id, circle);
+        } else {
+          circle.setLatLng(latlng);
+          circle.setStyle(circleOpts);
+          circle.setRadius(target.radius);
+        }
+      }
+
+      for (const [id, marker] of state.mapObjects.targetMarkers.entries()) {
+        if (!state.targets.some(t => t.id === id)) {
+          map.removeLayer(marker);
+          state.mapObjects.targetMarkers.delete(id);
+        }
+      }
+      for (const [id, circle] of state.mapObjects.targetCircles.entries()) {
+        if (!state.targets.some(t => t.id === id)) {
+          map.removeLayer(circle);
+          state.mapObjects.targetCircles.delete(id);
+        }
+      }
+
+      for (const zone of state.noFireZones) {
+        const latlng = [zone.lat, zone.lng];
+        let marker = state.mapObjects.noFireMarkers.get(zone.id);
+        if (!marker) {
+          marker = L.marker(latlng, { icon: noFireIcon, draggable: true }).addTo(map);
+          marker.on("dragend", () => {
+            const ll = marker.getLatLng();
+            zone.lat = ll.lat;
+            zone.lng = ll.lng;
+            renderAll();
+          });
+          state.mapObjects.noFireMarkers.set(zone.id, marker);
+        } else {
+          marker.setLatLng(latlng);
+        }
+        marker.bindPopup(`<b>${escapeHtml(zone.name)}</b><br>${Math.round(zone.radius)} m no-fire radius`);
+
+        let circle = state.mapObjects.noFireCircles.get(zone.id);
+        const opts = { radius: zone.radius, color: "#d6ad55", fillColor: "#d6ad55", fillOpacity: 0.16, weight: 2, dashArray: "8 7" };
+        if (!circle) {
+          circle = L.circle(latlng, opts).addTo(map);
+          state.mapObjects.noFireCircles.set(zone.id, circle);
+        } else {
+          circle.setLatLng(latlng);
+          circle.setRadius(zone.radius);
+          circle.setStyle(opts);
+        }
+      }
+
+      for (const [id, marker] of state.mapObjects.noFireMarkers.entries()) {
+        if (!state.noFireZones.some(z => z.id === id)) {
+          map.removeLayer(marker);
+          state.mapObjects.noFireMarkers.delete(id);
+        }
+      }
+      for (const [id, circle] of state.mapObjects.noFireCircles.entries()) {
+        if (!state.noFireZones.some(z => z.id === id)) {
+          map.removeLayer(circle);
+          state.mapObjects.noFireCircles.delete(id);
+        }
+      }
+
+      const target = getActiveTarget();
+      if (state.launcher && target) {
+        const latlngs = [[state.launcher.lat, state.launcher.lng], [target.lat, target.lng]];
+        if (!state.mapObjects.rangeLine) {
+          state.mapObjects.rangeLine = L.polyline(latlngs, { color: "#b8c77b", weight: 2, opacity: .8, dashArray: "10 9" }).addTo(map);
+        } else {
+          state.mapObjects.rangeLine.setLatLngs(latlngs);
+        }
+      } else if (state.mapObjects.rangeLine) {
+        map.removeLayer(state.mapObjects.rangeLine);
+        state.mapObjects.rangeLine = null;
+      }
+    }
+
+    function renderReadout() {
+      const target = getActiveTarget();
+      els.radiusOut.textContent = target ? Math.round(target.radius) : (Number(els.hitRadius.value) || 25);
+
+      if (state.launcher && target) {
+        const dist = distanceMeters(state.launcher, target);
+        const bear = bearingDeg(state.launcher, target);
+        els.rangeOut.textContent = formatMeters(dist);
+        els.bearingOut.textContent = formatBearing(bear);
+      } else {
+        els.rangeOut.textContent = "---";
+        els.bearingOut.textContent = "---";
+      }
+
+      const safety = evaluateSafety();
+      els.safetyText.textContent = safety.text;
+      els.safetyDot.className = `dot ${safety.level}`;
+    }
+
+    function renderLists() {
+      els.targetList.innerHTML = "";
+      if (!state.targets.length) {
+        els.targetList.innerHTML = `<div class="notice">No targets yet. Tap “Add Target”, then tap the map.</div>`;
+      } else {
+        for (const t of state.targets) {
+          const item = document.createElement("div");
+          item.className = `list-item ${t.id === state.activeTargetId ? "active" : ""}`;
+          item.innerHTML = `
+            <div>
+              <div class="list-title">${escapeHtml(t.name)}</div>
+              <div class="list-meta">${escapeHtml(t.roundType)} · ${Math.round(t.radius)} m radius</div>
+            </div>
+            <button class="small">Select</button>
+          `;
+          item.querySelector("button").onclick = () => {
+            state.activeTargetId = t.id;
+            loadTargetIntoForm(t);
+            renderAll();
+          };
+          els.targetList.appendChild(item);
+        }
+      }
+
+      els.zoneList.innerHTML = "";
+      if (!state.noFireZones.length) {
+        els.zoneList.innerHTML = `<div class="notice">No no-fire zones added.</div>`;
+      } else {
+        for (const z of state.noFireZones) {
+          const item = document.createElement("div");
+          item.className = "list-item";
+          item.innerHTML = `
+            <div>
+              <div class="list-title">${escapeHtml(z.name)}</div>
+              <div class="list-meta">${Math.round(z.radius)} m radius</div>
+            </div>
+            <button class="small danger">Remove</button>
+          `;
+          item.querySelector("button").onclick = () => {
+            state.noFireZones = state.noFireZones.filter(zone => zone.id !== z.id);
+            renderAll();
+          };
+          els.zoneList.appendChild(item);
+        }
+      }
+
+      els.logList.innerHTML = "";
+      if (!state.log.length) {
+        els.logList.innerHTML = `<div class="notice">No logged missions yet.</div>`;
+      } else {
+        for (const entry of [...state.log].reverse()) {
+          const item = document.createElement("div");
+          item.className = "list-item";
+          item.innerHTML = `
+            <div>
+              <div class="list-title">${escapeHtml(entry.targetName)} · ${escapeHtml(entry.roundType)}</div>
+              <div class="list-meta">${entry.rangeM} m · ${entry.bearingDeg}°T · ${new Date(entry.time).toLocaleString()}</div>
+            </div>
+            <button class="small">Copy</button>
+          `;
+          item.querySelector("button").onclick = () => copyText(entry.radioCall);
+          els.logList.appendChild(item);
+        }
+      }
+    }
+
+    function buildRadioCall() {
+      const target = getActiveTarget();
+      if (!state.launcher || !target) {
+        return "Set launcher and target to generate a radio call.";
+      }
+      const dist = Math.round(distanceMeters(state.launcher, target));
+      const bear = formatBearing(bearingDeg(state.launcher, target));
+      const safety = evaluateSafety();
+      const auth = target.authCode ? target.authCode : "[AUTH/CARD]";
+      const desc = target.description ? target.description : "[TARGET DESCRIPTION]";
+
+      return [
+        `FIRE MISSION REQUEST`,
+        `AUTH: ${auth}`,
+        `TARGET: ${target.name}`,
+        `DESCRIPTION: ${desc}`,
+        `ROUND: ${target.roundType}`,
+        `MAP RANGE: ${dist} meters`,
+        `MAP AZIMUTH: ${bear} degrees true`,
+        `LIKELY HIT RADIUS: ${Math.round(target.radius)} meters`,
+        `SAFETY CHECK: ${safety.text}`,
+        `STAFF FINAL APPROVAL REQUIRED`
+      ].join("\n");
+    }
+
+    function renderRadioCall() {
+      els.radioCall.value = buildRadioCall();
+    }
+
+    function renderAll() {
+      renderMapObjects();
+      renderReadout();
+      renderLists();
+      renderRadioCall();
+    }
+
+    function saveState() {
+      const payload = {
+        launcher: state.launcher,
+        targets: state.targets,
+        activeTargetId: state.activeTargetId,
+        noFireZones: state.noFireZones,
+        log: state.log
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      showToast("Saved locally on this device");
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        state.launcher = data.launcher || null;
+        state.targets = Array.isArray(data.targets) ? data.targets : [];
+        state.activeTargetId = data.activeTargetId || (state.targets[0] && state.targets[0].id) || null;
+        state.noFireZones = Array.isArray(data.noFireZones) ? data.noFireZones : [];
+        state.log = Array.isArray(data.log) ? data.log : [];
+
+        if (state.launcher) setLauncher(state.launcher, state.launcher.source || "saved");
+        const target = getActiveTarget();
+        if (target) loadTargetIntoForm(target);
+      } catch (err) {
+        console.warn(err);
+      }
+    }
+
+    function logMission() {
+      const target = getActiveTarget();
+      if (!state.launcher || !target) return showToast("Set launcher and target first");
+      const safety = evaluateSafety();
+      const entry = {
+        time: new Date().toISOString(),
+        targetName: target.name,
+        roundType: target.roundType,
+        authCode: target.authCode,
+        description: target.description,
+        launcherLat: state.launcher.lat,
+        launcherLng: state.launcher.lng,
+        targetLat: target.lat,
+        targetLng: target.lng,
+        rangeM: Math.round(distanceMeters(state.launcher, target)),
+        bearingDeg: Number(formatBearing(bearingDeg(state.launcher, target))),
+        hitRadiusM: Math.round(target.radius),
+        safety: safety.text,
+        radioCall: buildRadioCall()
+      };
+      state.log.push(entry);
+      saveState();
+      renderAll();
+      showToast("Mission logged");
+    }
+
+    function exportCSV() {
+      const rows = [
+        ["time", "target", "round_type", "auth_code", "range_m", "azimuth_true", "hit_radius_m", "safety", "launcher_lat", "launcher_lng", "target_lat", "target_lng", "description"]
+      ];
+      for (const e of state.log) {
+        rows.push([e.time, e.targetName, e.roundType, e.authCode, e.rangeM, e.bearingDeg, e.hitRadiusM, e.safety, e.launcherLat, e.launcherLng, e.targetLat, e.targetLng, e.description]);
+      }
+      const csv = rows.map(row => row.map(cell => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `sbm26-mission-log-${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      showToast("CSV exported");
+    }
+
+    function copyText(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => showToast("Copied"), () => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const area = document.createElement("textarea");
+      area.value = text;
+      document.body.appendChild(area);
+      area.select();
+      document.execCommand("copy");
+      area.remove();
+      showToast("Copied");
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "").replace(/[&<>'"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[c]));
+    }
+
+    function centerOnTarget() {
+      const target = getActiveTarget();
+      if (!target) return showToast("No active target selected");
+      map.setView([target.lat, target.lng], Math.max(map.getZoom(), 17));
+    }
+
+    function deleteActiveTarget() {
+      const target = getActiveTarget();
+      if (!target) return showToast("No active target selected");
+      state.targets = state.targets.filter(t => t.id !== target.id);
+      state.activeTargetId = state.targets[0]?.id || null;
+      loadTargetIntoForm(getActiveTarget());
+      renderAll();
+      showToast("Target deleted");
+    }
+
+    function useGPS() {
+      if (!navigator.geolocation) {
+        showToast("GPS not available in this browser");
+        return;
+      }
+      els.gpsBtn.textContent = "Locating...";
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          const latlng = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+          setLauncher(latlng, "gps");
+          map.setView([latlng.lat, latlng.lng], 17);
+          els.gpsBtn.textContent = "Use GPS";
+          showToast(`GPS set ±${Math.round(pos.coords.accuracy)} m`);
+        },
+        err => {
+          els.gpsBtn.textContent = "Use GPS";
+          showToast(err.message || "GPS permission denied");
+        },
+        { enableHighAccuracy: true, timeout: 9000, maximumAge: 5000 }
+      );
+    }
+
+    map.on("click", e => {
+      if (state.tool === "launcher") setLauncher(e.latlng, "manual");
+      if (state.tool === "target") addTarget(e.latlng);
+      if (state.tool === "nofire") addNoFireZone(e.latlng);
+    });
+
+    els.toolLauncher.onclick = () => setTool("launcher");
+    els.toolTarget.onclick = () => setTool("target");
+    els.toolNoFire.onclick = () => setTool("nofire");
+    els.gpsBtn.onclick = useGPS;
+    els.saveBtn.onclick = saveState;
+    els.exportBtn.onclick = exportCSV;
+    els.applyTargetBtn.onclick = updateActiveTargetFromForm;
+    els.centerTargetBtn.onclick = centerOnTarget;
+    els.deleteTargetBtn.onclick = deleteActiveTarget;
+    els.clearZonesBtn.onclick = () => { state.noFireZones = []; renderAll(); showToast("No-fire zones cleared"); };
+    els.copyCallBtn.onclick = () => copyText(els.radioCall.value);
+    els.logMissionBtn.onclick = logMission;
+    els.clearLogBtn.onclick = () => { state.log = []; saveState(); renderAll(); showToast("Mission log cleared"); };
+
+    els.hitRadius.onchange = () => {
+      els.radiusOut.textContent = Number(els.hitRadius.value) || 25;
+    };
+
+    loadState();
+    renderAll();
+
+    setTimeout(() => {
+      map.invalidateSize();
+      const points = [];
+      if (state.launcher) points.push([state.launcher.lat, state.launcher.lng]);
+      for (const t of state.targets) points.push([t.lat, t.lng]);
+      for (const z of state.noFireZones) points.push([z.lat, z.lng]);
+      if (points.length >= 2) map.fitBounds(points, { padding: [40, 40] });
+      else if (points.length === 1) map.setView(points[0], 17);
+    }, 200);
+  </script>
+</body>
+</html>
