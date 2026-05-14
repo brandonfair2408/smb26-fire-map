@@ -153,8 +153,18 @@
     .crosshair { width: 20px; height: 20px; border-radius: 999px; background: var(--blue); border: 2px solid white; box-shadow: 0 0 0 2px rgba(112,168,216,.45), 0 0 16px rgba(112,168,216,.8); }
     .current-location-pin { width: 18px; height: 18px; border-radius: 999px; background: #4da3ff; border: 3px solid white; box-shadow: 0 0 0 8px rgba(77,163,255,.22), 0 0 18px rgba(77,163,255,.85); }
     .field-vertex-pin { width: 16px; height: 16px; border-radius: 999px; background: #8fbf72; border: 2px solid #f4ffe8; box-shadow: 0 0 0 2px rgba(143,191,114,.35), 0 3px 10px rgba(0,0,0,.45); }
-    .target-pin { width: 22px; height: 22px; border-radius: 999px 999px 999px 0; transform: rotate(-45deg); background: var(--danger); border: 2px solid #fff1e8; box-shadow: 0 0 0 2px rgba(217,104,82,.35), 0 4px 14px rgba(0,0,0,.45); }
+    .target-pin { width: 22px; height: 22px; border-radius: 999px 999px 999px 0; transform: rotate(-45deg); border: 2px solid #fff1e8; box-shadow: 0 0 0 2px rgba(0,0,0,.28), 0 4px 14px rgba(0,0,0,.45); }
     .target-pin::after { content: ""; position: absolute; width: 6px; height: 6px; border-radius: 50%; left: 6px; top: 6px; background: #fff1e8; }
+    .target-pin.round-bb { background: #d96852; border-color: #fff1e8; }
+    .target-pin.round-bb::after { background: #fff1e8; }
+    .target-pin.round-vis { background: #f4f1e8; border-color: #111; }
+    .target-pin.round-vis::after { background: #111; }
+    .target-pin.round-ir { background: #111; border-color: #f4f1e8; }
+    .target-pin.round-ir::after { background: #f4f1e8; }
+    .target-pin.round-leaflet { background: #43b05c; border-color: #102516; box-shadow: 0 0 0 2px rgba(255,255,255,.35), 0 4px 14px rgba(0,0,0,.45); }
+    .target-pin.round-leaflet::after { background: #102516; }
+    .target-pin.round-training { background: #9aa1a8; border-color: #101418; }
+    .target-pin.round-training::after { background: #101418; }
     .nofire-pin { width: 18px; height: 18px; border-radius: 4px; background: var(--warn); border: 2px solid #fff7de; box-shadow: 0 0 0 2px rgba(214,173,85,.35), 0 4px 14px rgba(0,0,0,.45); transform: rotate(45deg); }
 
     #panel { max-height: 52vh; min-height: 192px; overflow: auto; padding: 10px 10px calc(10px + var(--safe-area-bottom)); background: rgba(17,21,15,.96); border-top: 1px solid var(--line); box-shadow: 0 -16px 38px rgba(0,0,0,.38); z-index: 20; }
@@ -399,7 +409,23 @@
     const launcherIcon = L.divIcon({ className: "", html: "<div class='crosshair'></div>", iconSize: [24, 24], iconAnchor: [12, 12] });
     const currentLocationIcon = L.divIcon({ className: "", html: "<div class='current-location-pin'></div>", iconSize: [24, 24], iconAnchor: [12, 12] });
     const fieldVertexIcon = L.divIcon({ className: "", html: "<div class='field-vertex-pin'></div>", iconSize: [22, 22], iconAnchor: [11, 11] });
-    const targetIcon = L.divIcon({ className: "", html: "<div class='target-pin'></div>", iconSize: [28, 28], iconAnchor: [14, 26] });
+    function getRoundClass(roundType) {
+      const value = String(roundType || "").toLowerCase();
+      if (value.includes("visible")) return "round-vis";
+      if (value.includes("ir")) return "round-ir";
+      if (value.includes("leaflet")) return "round-leaflet";
+      if (value.includes("training")) return "round-training";
+      return "round-bb";
+    }
+
+    function getTargetIcon(roundType) {
+      return L.divIcon({
+        className: "",
+        html: `<div class='target-pin ${getRoundClass(roundType)}'></div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 26]
+      });
+    }
     const noFireIcon = L.divIcon({ className: "", html: "<div class='nofire-pin'></div>", iconSize: [22, 22], iconAnchor: [11, 11] });
 
     const map = L.map("map", { zoomControl: false, preferCanvas: true }).setView([38.25, -77.0], 13);
@@ -651,11 +677,14 @@
         const latlng = [target.lat, target.lng];
         let marker = state.mapObjects.targetMarkers.get(target.id);
         if (!marker) {
-          marker = L.marker(latlng, { icon: targetIcon, draggable: true }).addTo(map);
+          marker = L.marker(latlng, { icon: getTargetIcon(target.roundType), draggable: true }).addTo(map);
           marker.on("click", () => { state.activeTargetId = target.id; loadTargetIntoForm(target); renderAll(); });
           marker.on("dragend", () => { const ll = marker.getLatLng(); target.lat = ll.lat; target.lng = ll.lng; renderAll(); });
           state.mapObjects.targetMarkers.set(target.id, marker);
-        } else marker.setLatLng(latlng);
+        } else {
+          marker.setLatLng(latlng);
+          marker.setIcon(getTargetIcon(target.roundType));
+        }
         marker.bindPopup(`<b>${escapeHtml(target.name)}</b><br>${Math.round(target.radius)} m likely-hit radius`);
         let circle = state.mapObjects.targetCircles.get(target.id);
         const isActive = target.id === state.activeTargetId;
