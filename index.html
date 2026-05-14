@@ -112,6 +112,7 @@
     #mapWrap { position: relative; min-height: 0; }
     #map { height: 100%; width: 100%; background: #202a1c; z-index: 1; }
 
+    .leaflet-container { height: 100%; width: 100%; }
     .leaflet-control-attribution { font-size: 9px !important; background: rgba(255,255,255,.65) !important; }
     .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #1b2319; color: var(--text); border: 1px solid var(--line); }
     .leaflet-popup-content { margin: 10px 12px; font-size: 12px; }
@@ -1131,18 +1132,41 @@
       els.radiusOut.textContent = Number(els.hitRadius.value) || 25;
     };
 
-    loadState();
-    renderAll();
-
-    setTimeout(() => {
-      map.invalidateSize();
+    function refitMapToData() {
       const points = [];
       if (state.launcher) points.push([state.launcher.lat, state.launcher.lng]);
       for (const t of state.targets) points.push([t.lat, t.lng]);
       for (const z of state.noFireZones) points.push([z.lat, z.lng]);
-      if (points.length >= 2) map.fitBounds(points, { padding: [40, 40] });
+
+      if (points.length >= 2) map.fitBounds(points, { padding: [40, 40], maxZoom: 17 });
       else if (points.length === 1) map.setView(points[0], 17);
-    }, 200);
+    }
+
+    function refreshMapSize(refit = false) {
+      requestAnimationFrame(() => {
+        map.invalidateSize({ animate: false, pan: false });
+        if (refit) refitMapToData();
+      });
+    }
+
+    loadState();
+    renderAll();
+
+    // Leaflet can render partial/tiled gray squares if the map is initialized
+    // before the browser, iframe, or mobile viewport finishes sizing.
+    // These calls force Leaflet to re-check the real container size.
+    refreshMapSize(true);
+    setTimeout(() => refreshMapSize(true), 250);
+    setTimeout(() => refreshMapSize(true), 900);
+
+    if ("ResizeObserver" in window) {
+      const resizeObserver = new ResizeObserver(() => refreshMapSize(false));
+      resizeObserver.observe(document.getElementById("mapWrap"));
+      resizeObserver.observe(document.getElementById("app"));
+    }
+
+    window.addEventListener("resize", () => refreshMapSize(false));
+    window.addEventListener("orientationchange", () => setTimeout(() => refreshMapSize(true), 350));
   </script>
 </body>
 </html>
