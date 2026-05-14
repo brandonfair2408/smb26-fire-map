@@ -273,8 +273,101 @@
     }
 
 
+
+    #printCardPage { display: none; }
+    body.print-map { overflow: hidden !important; background: #fff !important; }
+    body.print-map #app { display: none !important; }
+    body.print-map #printCardPage {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1fr) 360px;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 12px;
+      width: 100vw;
+      height: 100vh;
+      padding: 18px;
+      background: #fff;
+      color: #111;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    #printCardHeader {
+      grid-column: 1 / -1;
+      border-bottom: 2px solid #111;
+      padding-bottom: 8px;
+    }
+    #printCardHeader h1 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: .08em;
+    }
+    #printCardHeader p {
+      margin: 4px 0 0;
+      font-size: 12px;
+    }
+    #printCardMap {
+      min-height: 0;
+      height: 100%;
+      width: 100%;
+      border: 2px solid #111;
+      background: #ddd;
+      overflow: hidden;
+    }
+    #printCardDetails {
+      border: 2px solid #111;
+      padding: 12px;
+      font: 12px/1.35 Arial, Helvetica, sans-serif;
+      overflow: auto;
+    }
+    #printCardDetails h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      letter-spacing: .04em;
+    }
+    #printCardDetails p { margin: 4px 0; }
+    #printCardDetails .fine { font-size: 10px; margin-top: 10px; }
+    body.print-map #printCardPage .leaflet-marker-icon,
+    body.print-map #printCardPage .leaflet-marker-shadow { display: none !important; }
+    body.print-map #printCardPage .target-label {
+      display: block !important;
+      background: rgba(255,255,255,.94) !important;
+      color: #111 !important;
+      border: 1px solid #111 !important;
+      border-radius: 999px !important;
+      padding: 3px 8px !important;
+      font-weight: 800 !important;
+      font-size: 11px !important;
+      letter-spacing: .03em !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,.28) !important;
+    }
+    body.print-map #printCardPage .target-label.round-ir {
+      background: rgba(17,17,17,.94) !important;
+      color: #fff !important;
+      border-color: #fff !important;
+    }
+
     @media print {
       @page { size: landscape; margin: 0.35in; }
+      body.print-map #app { display: none !important; }
+      body.print-map #printCardPage {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) 3.65in !important;
+        grid-template-rows: auto 1fr !important;
+        gap: 0.12in !important;
+        width: auto !important;
+        height: 7.25in !important;
+        padding: 0 !important;
+        background: #fff !important;
+        color: #111 !important;
+      }
+      body.print-map #printCardHeader { grid-column: 1 / -1 !important; border-bottom: 2px solid #111 !important; padding-bottom: 0.08in !important; }
+      body.print-map #printCardHeader h1 { font-size: 18px !important; margin: 0 !important; }
+      body.print-map #printCardHeader p { font-size: 10px !important; margin: 3px 0 0 !important; }
+      body.print-map #printCardMap { height: 6.55in !important; width: 100% !important; border: 2px solid #111 !important; }
+      body.print-map #printCardDetails { border: 2px solid #111 !important; padding: 0.1in !important; font: 10px/1.3 Arial, sans-serif !important; overflow: hidden !important; }
+      body.print-map #printCardDetails h2 { font-size: 13px !important; margin: 0 0 0.06in !important; }
+      body.print-map #printCardDetails p { margin: 2px 0 !important; }
+      body.print-map #printCardPage .leaflet-marker-icon,
+      body.print-map #printCardPage .leaflet-marker-shadow { display: none !important; }
+      body.print-map #printCardPage .target-label { display: block !important; }
       html, body { height: auto !important; overflow: visible !important; background: #fff !important; }
       body.print-map { background: #fff !important; color: #111 !important; }
       body.print-map #app { display: block !important; height: auto !important; width: auto !important; background: #fff !important; }
@@ -323,6 +416,11 @@
         color: #111 !important;
         background: rgba(255,255,255,.75) !important;
       }
+
+      /* Final print override: print only the generated fire mission card, never the app UI. */
+      body.print-map #app { display: none !important; }
+      body.print-map #printCardPage { display: grid !important; }
+      body.print-map #printDetails { display: none !important; }
     }
   </style>
 </head>
@@ -455,6 +553,15 @@
     </aside>
   </div>
 
+  <section id="printCardPage" aria-hidden="true">
+    <div id="printCardHeader">
+      <h1>SBM-26 FIRE MISSION CARD</h1>
+      <p>Target area map for staff review and event use. Map aid only. Staff final approval required.</p>
+    </div>
+    <div id="printCardMap"></div>
+    <aside id="printCardDetails"></aside>
+  </section>
+
   <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
@@ -527,7 +634,10 @@
       logList: document.getElementById("logList"),
       clearLogBtn: document.getElementById("clearLogBtn"),
       toast: document.getElementById("toast"),
-      printDetails: document.getElementById("printDetails")
+      printDetails: document.getElementById("printDetails"),
+      printCardPage: document.getElementById("printCardPage"),
+      printCardMap: document.getElementById("printCardMap"),
+      printCardDetails: document.getElementById("printCardDetails")
     };
 
     const launcherIcon = L.divIcon({ className: "", html: "<div class='crosshair'></div>", iconSize: [24, 24], iconAnchor: [12, 12] });
@@ -567,6 +677,8 @@
     };
 
     let activeBaseLayer = "street";
+    let printMapInstance = null;
+    let printBaseLayer = null;
     baseLayers.street.addTo(map);
 
     function uid(prefix) { return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`; }
@@ -978,7 +1090,7 @@
       const allTargets = state.targets.length ? state.targets.map(t => escapeHtml(t.name)).join(", ") : "---";
 
       return `
-        <h1>SBM-26 FIRE MISSION CARD</h1>
+        <h2>Mission Data</h2>
         <p><strong>Generated:</strong> ${escapeHtml(now)}</p>
         <p><strong>Targets shown:</strong> ${allTargets}</p>
         <p><strong>Active target:</strong> ${targetName}</p>
@@ -994,7 +1106,107 @@
     }
 
     function updatePrintDetails() {
-      els.printDetails.innerHTML = buildPrintDetails();
+      const details = buildPrintDetails();
+      els.printDetails.innerHTML = details;
+      els.printCardDetails.innerHTML = details;
+    }
+
+    function getRoundMapStyle(roundType) {
+      const cls = getRoundClass(roundType);
+      if (cls === "round-vis") return { color: "#111111", fillColor: "#f4f1e8" };
+      if (cls === "round-ir") return { color: "#f4f1e8", fillColor: "#111111" };
+      if (cls === "round-leaflet") return { color: "#0f4f22", fillColor: "#43b05c" };
+      if (cls === "round-training") return { color: "#101418", fillColor: "#9aa1a8" };
+      return { color: "#9f2f22", fillColor: "#d96852" };
+    }
+
+    function makePrintTileLayer() {
+      if (activeBaseLayer === "satellite") {
+        return L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+          maxZoom: 19,
+          attribution: "Tiles &copy; Esri"
+        });
+      }
+      return L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 20,
+        attribution: "&copy; OpenStreetMap contributors"
+      });
+    }
+
+    function buildPrintCardMap() {
+      if (printMapInstance) {
+        printMapInstance.remove();
+        printMapInstance = null;
+      }
+      els.printCardMap.innerHTML = "";
+
+      printMapInstance = L.map("printCardMap", {
+        zoomControl: false,
+        dragging: false,
+        touchZoom: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        boxZoom: false,
+        keyboard: false,
+        preferCanvas: true
+      });
+
+      printBaseLayer = makePrintTileLayer().addTo(printMapInstance);
+      const bounds = L.latLngBounds([]);
+      let hasBounds = false;
+
+      function extendBounds(layerOrLatLng) {
+        try {
+          if (layerOrLatLng.getBounds) bounds.extend(layerOrLatLng.getBounds());
+          else bounds.extend(layerOrLatLng);
+          hasBounds = true;
+        } catch (err) {}
+      }
+
+      if (state.fieldAreaClosed && state.fieldArea.length >= 3) {
+        const latlngs = state.fieldArea.map(p => [p.lat, p.lng]);
+        const poly = L.polygon(latlngs, { color: "#4f9b4f", fillColor: "#8fbf72", fillOpacity: 0.08, weight: 3 }).addTo(printMapInstance);
+        extendBounds(poly);
+      }
+
+      for (const zone of state.noFireZones) {
+        const circle = L.circle([zone.lat, zone.lng], {
+          radius: zone.radius,
+          color: "#b48621",
+          fillColor: "#d6ad55",
+          fillOpacity: 0.16,
+          weight: 2,
+          dashArray: "8 7"
+        }).addTo(printMapInstance);
+        extendBounds(circle);
+      }
+
+      for (const target of state.targets) {
+        const style = getRoundMapStyle(target.roundType);
+        const circle = L.circle([target.lat, target.lng], {
+          radius: target.radius,
+          color: style.color,
+          fillColor: style.fillColor,
+          fillOpacity: 0.22,
+          weight: 3
+        }).addTo(printMapInstance);
+        extendBounds(circle);
+        L.tooltip({
+          permanent: true,
+          direction: "center",
+          opacity: 1,
+          className: `target-label ${getRoundClass(target.roundType)}`
+        }).setLatLng([target.lat, target.lng]).setContent(escapeHtml(target.name)).addTo(printMapInstance);
+      }
+
+      if (hasBounds && bounds.isValid()) {
+        printMapInstance.fitBounds(bounds, { padding: [35, 35], maxZoom: 18 });
+      } else {
+        printMapInstance.setView(map.getCenter(), map.getZoom());
+      }
+
+      setTimeout(() => printMapInstance.invalidateSize({ animate: false, pan: false }), 100);
+      setTimeout(() => printMapInstance.invalidateSize({ animate: false, pan: false }), 500);
     }
 
     function toggleBaseMap() {
@@ -1030,22 +1242,26 @@
       updatePrintDetails();
       document.body.classList.add("print-map");
       els.printMapBtn.textContent = "Preparing...";
+      buildPrintCardMap();
 
       const restoreAfterPrint = () => {
         document.body.classList.remove("print-map");
         els.printMapBtn.textContent = "Print Card";
+        if (printMapInstance) {
+          printMapInstance.remove();
+          printMapInstance = null;
+        }
         refreshMapSize(true);
       };
 
       window.addEventListener("afterprint", restoreAfterPrint, { once: true });
-      refreshMapSize(true);
       setTimeout(() => {
-        refreshMapSize(true);
+        if (printMapInstance) printMapInstance.invalidateSize({ animate: false, pan: false });
         window.print();
         setTimeout(() => {
           if (document.body.classList.contains("print-map")) restoreAfterPrint();
-        }, 2500);
-      }, 400);
+        }, 3000);
+      }, 1100);
     }
 
     function renderAll() { renderMapObjects(); renderReadout(); renderLists(); renderFieldInfo(); renderRadioCall(); updatePrintDetails(); }
