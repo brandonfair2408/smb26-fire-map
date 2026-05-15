@@ -198,6 +198,8 @@
 
     .crosshair { width: 20px; height: 20px; border-radius: 999px; background: var(--blue); border: 2px solid white; box-shadow: 0 0 0 2px rgba(112,168,216,.45), 0 0 16px rgba(112,168,216,.8); }
     .current-location-pin { width: 18px; height: 18px; border-radius: 999px; background: #4da3ff; border: 3px solid white; box-shadow: 0 0 0 8px rgba(77,163,255,.22), 0 0 18px rgba(77,163,255,.85); }
+    .search-pin { width: 18px; height: 18px; border-radius: 999px 999px 999px 0; transform: rotate(-45deg); background: #70a8d8; border: 2px solid #fff; box-shadow: 0 0 0 2px rgba(112,168,216,.35), 0 4px 14px rgba(0,0,0,.45); }
+    .search-pin::after { content: ""; position: absolute; width: 6px; height: 6px; border-radius: 50%; left: 4px; top: 4px; background: #fff; }
     .field-vertex-pin { width: 16px; height: 16px; border-radius: 999px; background: #8fbf72; border: 2px solid #f4ffe8; box-shadow: 0 0 0 2px rgba(143,191,114,.35), 0 3px 10px rgba(0,0,0,.45); }
     .target-pin { width: 22px; height: 22px; border-radius: 999px 999px 999px 0; transform: rotate(-45deg); border: 2px solid #fff1e8; box-shadow: 0 0 0 2px rgba(0,0,0,.28), 0 4px 14px rgba(0,0,0,.45); }
     .target-pin::after { content: ""; position: absolute; width: 6px; height: 6px; border-radius: 50%; left: 6px; top: 6px; background: #fff1e8; }
@@ -493,6 +495,43 @@
       border-color: #fff !important;
     }
 
+    body.card-preview #printCardPage .leaflet-marker-icon.print-target-label-marker,
+    body.print-map #printCardPage .leaflet-marker-icon.print-target-label-marker {
+      display: block !important;
+      width: 0 !important;
+      height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+      background: transparent !important;
+    }
+    .print-target-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transform: translate(-50%, -50%);
+      width: max-content;
+      min-width: 0;
+      white-space: nowrap;
+      border: 1.5px solid #111;
+      border-radius: 999px;
+      padding: 2px 6px;
+      background: rgba(255,255,255,.96);
+      color: #111;
+      font: 800 11px/1 Arial, Helvetica, sans-serif;
+      letter-spacing: .02em;
+      box-shadow: 0 1px 5px rgba(0,0,0,.25);
+    }
+    .print-target-badge.round-ir {
+      background: rgba(17,17,17,.96);
+      color: #fff;
+      border-color: #fff;
+    }
+    .print-target-badge.round-vis { background: rgba(255,255,255,.96); color: #111; border-color: #111; }
+    .print-target-badge.round-leaflet { background: #eaffef; color: #0f4f22; border-color: #0f4f22; }
+    .print-target-badge.round-training { background: #eee; color: #111; border-color: #333; }
+    .print-target-badge.round-bb { background: rgba(255,255,255,.96); color: #111; border-color: #9f2f22; }
+
     @media print {
       @page { size: landscape; margin: 0.35in; }
       body.card-preview { background: #fff !important; color: #111 !important; }
@@ -596,6 +635,63 @@
       overflow: hidden;
     }
     .field-schematic svg { width: 100%; height: 100%; display: block; }
+    .print-card-map {
+      height: 6.3in;
+      width: 100%;
+      border: 2px solid #111;
+      background: #ddd;
+      overflow: hidden;
+      position: relative;
+    }
+    /* Strong override: earlier card-preview rules set #printCardMap to height:100%.
+       That can collapse because the printable page uses min-height, not a fixed height. */
+    body.card-preview #printCardMap.print-card-map {
+      display: block !important;
+      height: 6.3in !important;
+      min-height: 6.3in !important;
+      width: 100% !important;
+    }
+    .print-card-map .leaflet-control-attribution {
+      color: #111 !important;
+      background: rgba(255,255,255,.72) !important;
+      font-size: 8px !important;
+    }
+    .print-card-map .leaflet-control-scale {
+      background: rgba(255,255,255,.82);
+      padding: 3px 5px;
+      border: 1px solid rgba(0,0,0,.45);
+      border-radius: 3px;
+    }
+    .print-card-map .leaflet-control-scale-line {
+      border: 2px solid #111;
+      border-top: none;
+      color: #111;
+      background: rgba(255,255,255,.7);
+      font: 10px/1.1 Arial, sans-serif;
+      padding: 2px 5px 1px;
+      white-space: nowrap;
+      box-sizing: content-box;
+    }
+    .print-north-arrow {
+      background: rgba(255,255,255,.86);
+      color: #111;
+      border: 1px solid #111;
+      border-radius: 4px;
+      width: 42px;
+      height: 52px;
+      text-align: center;
+      font: 800 13px/1 Arial, sans-serif;
+      padding-top: 5px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.22);
+    }
+    .print-north-arrow .arrow {
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 25px solid #111;
+      margin: 0 auto 3px;
+    }
     .map-legend {
       display: flex;
       flex-wrap: wrap;
@@ -720,6 +816,8 @@
       }
       body.card-preview .fire-card-header { margin-bottom: 0.1in !important; }
       body.card-preview .field-schematic { height: 6.65in !important; }
+      body.card-preview #printCardMap.print-card-map { height: 6.65in !important; min-height: 6.65in !important; width: 100% !important; }
+      body.card-preview .print-card-map { height: 6.65in !important; }
       body.card-preview .mission-card-grid { gap: 0.1in !important; }
       body.card-preview .mission-box { padding: 0.09in !important; }
       body.card-preview .mission-box p { font-size: 11px !important; margin: 4px 0 !important; }
@@ -727,6 +825,45 @@
       body.card-preview .call-example { font-size: 10px !important; }
       body.card-preview .target-key-table { font-size: 10px !important; }
     }
+
+
+    /* v18 print/card target badges: centered inside target circles and sized to the abbreviated ID only. */
+    body.card-preview #printCardPage .leaflet-marker-icon.print-target-label-marker,
+    body.print-map #printCardPage .leaflet-marker-icon.print-target-label-marker {
+      display: block !important;
+      width: 0 !important;
+      height: 0 !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: 0 !important;
+      background: transparent !important;
+    }
+    .print-target-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transform: translate(-50%, -50%);
+      width: max-content;
+      min-width: 0;
+      white-space: nowrap;
+      border: 1.5px solid #111;
+      border-radius: 999px;
+      padding: 2px 6px;
+      background: rgba(255,255,255,.96);
+      color: #111;
+      font: 800 11px/1 Arial, Helvetica, sans-serif;
+      letter-spacing: .02em;
+      box-shadow: 0 1px 5px rgba(0,0,0,.25);
+    }
+    .print-target-badge.round-ir {
+      background: rgba(17,17,17,.96);
+      color: #fff;
+      border-color: #fff;
+    }
+    .print-target-badge.round-vis { background: rgba(255,255,255,.96); color: #111; border-color: #111; }
+    .print-target-badge.round-leaflet { background: #eaffef; color: #0f4f22; border-color: #0f4f22; }
+    .print-target-badge.round-training { background: #eee; color: #111; border-color: #333; }
+    .print-target-badge.round-bb { background: rgba(255,255,255,.96); color: #111; border-color: #9f2f22; }
   </style>
 </head>
 <body>
@@ -768,10 +905,21 @@
         <h2>Mission Readout</h2>
         <div class="readout">
           <div class="metric"><div class="label">Range</div><div class="value"><span id="rangeOut">---</span><span class="unit">m</span></div></div>
-          <div class="metric"><div class="label">Azimuth</div><div class="value"><span id="bearingOut">---</span><span class="unit">Â°T</span></div></div>
+          <div class="metric"><div class="label">Azimuth</div><div class="value"><span id="bearingOut">---</span><span class="unit">°T</span></div></div>
           <div class="metric"><div class="label">Hit Radius</div><div class="value"><span id="radiusOut">25</span><span class="unit">m</span></div></div>
         </div>
         <p class="notice" style="margin: 8px 0 0;">This app is for event coordination, safety checks, and logging only. It does not calculate launch settings.</p>
+      </div>
+
+      <div class="card grid">
+        <h3>Find Location</h3>
+        <p class="notice" style="margin:0;">Search for an airsoft field, address, or place name, then jump the map there.</p>
+        <label>Place Search<input id="locationSearch" placeholder="Example: Ballahack Airsoft or 123 Main St" /></label>
+        <div class="button-row">
+          <button id="locationSearchBtn" class="primary">Search Map</button>
+          <button id="clearSearchBtn">Clear Marker</button>
+        </div>
+        <div id="locationResults" class="list"></div>
       </div>
 
       <div class="card grid">
@@ -814,7 +962,7 @@
 
       <div class="card grid">
         <h3>Field Area</h3>
-        <p class="notice" style="margin:0;">Tap â€œDraw Field Areaâ€, then tap the map corners in order. Finish the field to turn on outside-field warnings.</p>
+        <p class="notice" style="margin:0;">Tap “Draw Field Area”, then tap the map corners in order. Finish the field to turn on outside-field warnings.</p>
         <div class="button-row">
           <button id="finishFieldBtn" class="primary">Finish Field</button>
           <button id="undoFieldBtn">Undo Point</button>
@@ -868,16 +1016,15 @@
       <header class="fire-card-header">
         <div>
           <h1>FIRE MISSION CARD</h1>
-          <p>Field target map. Staff approval required before mission execution.</p>
+          <p>Map context around the play area. Staff approval required before mission execution.</p>
         </div>
-        <div class="fire-card-auth-mini" id="mapAuthMini" style="display:none;"></div>
+        <div class="fire-card-auth-mini" id="mapAuthMini">MAP CONTEXT</div>
       </header>
-      <div id="fieldSchematic" class="field-schematic"></div>
+      <div id="printCardMap" class="print-card-map" aria-label="Printable map around the play area"></div>
+      <div id="fieldSchematic" hidden></div>
       <div class="map-legend">
         <span><b class="legend-field"></b> Field boundary</span>
         <span><b class="legend-bb"></b> BB / target area</span>
-        <span><b class="legend-vis"></b> VIS-ILLUM</span>
-        <span><b class="legend-ir"></b> IR-ILLUM</span>
         <span><b class="legend-nofire"></b> No-fire zone</span>
       </div>
     </article>
@@ -892,7 +1039,7 @@
   ></script>
 
   <script>
-    const STORAGE_KEY = "sbm26_fire_map_v12";
+    const STORAGE_KEY = "sbm26_fire_map_v15";
 
     const state = {
       tool: "launcher",
@@ -913,7 +1060,9 @@
         targetCircles: new Map(),
         noFireMarkers: new Map(),
         noFireCircles: new Map(),
-        rangeLine: null
+        rangeLine: null,
+        launcherRangeCircle: null,
+        searchMarker: null
       }
     };
 
@@ -927,6 +1076,10 @@
       exitPreviewBtn: document.getElementById("exitPreviewBtn"),
       saveBtn: document.getElementById("saveBtn"),
       exportBtn: document.getElementById("exportBtn"),
+      locationSearch: document.getElementById("locationSearch"),
+      locationSearchBtn: document.getElementById("locationSearchBtn"),
+      clearSearchBtn: document.getElementById("clearSearchBtn"),
+      locationResults: document.getElementById("locationResults"),
       toolLauncher: document.getElementById("toolLauncher"),
       toolTarget: document.getElementById("toolTarget"),
       toolNoFire: document.getElementById("toolNoFire"),
@@ -970,6 +1123,7 @@
 
     const launcherIcon = L.divIcon({ className: "", html: "<div class='crosshair'></div>", iconSize: [24, 24], iconAnchor: [12, 12] });
     const currentLocationIcon = L.divIcon({ className: "", html: "<div class='current-location-pin'></div>", iconSize: [24, 24], iconAnchor: [12, 12] });
+    const searchLocationIcon = L.divIcon({ className: "", html: "<div class='search-pin'></div>", iconSize: [24, 24], iconAnchor: [12, 22] });
     const fieldVertexIcon = L.divIcon({ className: "", html: "<div class='field-vertex-pin'></div>", iconSize: [22, 22], iconAnchor: [11, 11] });
     function getRoundClass(roundType) {
       const value = String(roundType || "").toLowerCase();
@@ -1074,7 +1228,7 @@
       } else {
         state.mapObjects.currentMarker.setLatLng(latlng);
       }
-      const accText = Number.isFinite(accuracy) ? ` Â±${Math.round(accuracy)} m` : "";
+      const accText = Number.isFinite(accuracy) ? ` ±${Math.round(accuracy)} m` : "";
       state.mapObjects.currentMarker.bindPopup(`Current location${accText}`);
       renderAll();
     }
@@ -1260,7 +1414,8 @@
           marker.setIcon(getTargetIcon(target.roundType));
         }
         marker.bindPopup(`<b>${escapeHtml(target.name)}</b><br>${Math.round(target.radius)} m likely-hit radius`);
-        marker.bindTooltip(escapeHtml(target.name), {
+        const targetIndex = state.targets.findIndex(t => t.id === target.id);
+        marker.bindTooltip(escapeHtml(abbreviateTargetId(target.name, targetIndex)), {
           permanent: true,
           direction: "top",
           offset: [0, -26],
@@ -1306,6 +1461,30 @@
       for (const [id, circle] of state.mapObjects.noFireCircles.entries()) {
         if (!state.noFireZones.some(z => z.id === id)) { map.removeLayer(circle); state.mapObjects.noFireCircles.delete(id); }
       }
+
+      // Live-map launcher reference ring only. This is intentionally not drawn on the printable card preview.
+      if (state.launcher) {
+        const launcherLatLng = [state.launcher.lat, state.launcher.lng];
+        const launcherCircleOpts = {
+          radius: 300,
+          color: "#70a8d8",
+          fillColor: "#70a8d8",
+          fillOpacity: 0.035,
+          weight: 2,
+          dashArray: "10 8"
+        };
+        if (!state.mapObjects.launcherRangeCircle) {
+          state.mapObjects.launcherRangeCircle = L.circle(launcherLatLng, launcherCircleOpts).addTo(map);
+        } else {
+          state.mapObjects.launcherRangeCircle.setLatLng(launcherLatLng);
+          state.mapObjects.launcherRangeCircle.setRadius(300);
+          state.mapObjects.launcherRangeCircle.setStyle(launcherCircleOpts);
+        }
+      } else if (state.mapObjects.launcherRangeCircle) {
+        map.removeLayer(state.mapObjects.launcherRangeCircle);
+        state.mapObjects.launcherRangeCircle = null;
+      }
+
       const target = getActiveTarget();
       if (state.launcher && target) {
         const latlngs = [[state.launcher.lat, state.launcher.lng], [target.lat, target.lng]];
@@ -1334,12 +1513,12 @@
 
     function renderLists() {
       els.targetList.innerHTML = "";
-      if (!state.targets.length) els.targetList.innerHTML = `<div class="notice">No targets yet. Tap â€œAdd Targetâ€, then tap the map.</div>`;
+      if (!state.targets.length) els.targetList.innerHTML = `<div class="notice">No targets yet. Tap “Add Target”, then tap the map.</div>`;
       else {
         for (const t of state.targets) {
           const item = document.createElement("div");
           item.className = `list-item ${t.id === state.activeTargetId ? "active" : ""}`;
-          item.innerHTML = `<div><div class="list-title">${escapeHtml(t.name)}</div><div class="list-meta">${escapeHtml(t.roundType)} Â· ${Math.round(t.radius)} m radius</div></div><button class="small">Select</button>`;
+          item.innerHTML = `<div><div class="list-title">${escapeHtml(t.name)}</div><div class="list-meta">${escapeHtml(t.roundType)} · ${Math.round(t.radius)} m radius</div></div><button class="small">Select</button>`;
           item.querySelector("button").onclick = () => { state.activeTargetId = t.id; loadTargetIntoForm(t); renderAll(); };
           els.targetList.appendChild(item);
         }
@@ -1361,7 +1540,7 @@
         for (const entry of [...state.log].reverse()) {
           const item = document.createElement("div");
           item.className = "list-item";
-          item.innerHTML = `<div><div class="list-title">${escapeHtml(entry.targetName)} Â· ${escapeHtml(entry.roundType)}</div><div class="list-meta">${entry.rangeM} m Â· ${entry.bearingDeg}Â°T Â· ${new Date(entry.time).toLocaleString()}</div></div><button class="small">Copy</button>`;
+          item.innerHTML = `<div><div class="list-title">${escapeHtml(entry.targetName)} · ${escapeHtml(entry.roundType)}</div><div class="list-meta">${entry.rangeM} m · ${entry.bearingDeg}°T · ${new Date(entry.time).toLocaleString()}</div></div><button class="small">Copy</button>`;
           item.querySelector("button").onclick = () => copyText(entry.radioCall);
           els.logList.appendChild(item);
         }
@@ -1407,7 +1586,7 @@
 
       if (state.launcher && target) {
         range = `${Math.round(distanceMeters(state.launcher, target))} m`;
-        azimuth = `${formatBearing(bearingDeg(state.launcher, target))}Â° true`;
+        azimuth = `${formatBearing(bearingDeg(state.launcher, target))}° true`;
       }
 
       const fieldStatus = state.fieldAreaClosed ? `Field boundary active: ${state.fieldArea.length} points` : "Field boundary: not finalized";
@@ -1434,10 +1613,190 @@
     }
 
     function updatePrintDetails() {
-      if (els.mapAuthMini) els.mapAuthMini.textContent = "";
-      els.fieldSchematic.innerHTML = buildFieldSchematicSvg();
-      els.missionDataPage.innerHTML = buildMissionDataCard();
-      els.printDetails.innerHTML = "";
+      const details = buildPrintDetails();
+      els.printDetails.innerHTML = details;
+      els.printCardDetails.innerHTML = details;
+    }
+
+    function getRoundMapStyle(roundType) {
+      const cls = getRoundClass(roundType);
+      if (cls === "round-vis") return { color: "#111111", fillColor: "#f4f1e8" };
+      if (cls === "round-ir") return { color: "#f4f1e8", fillColor: "#111111" };
+      if (cls === "round-leaflet") return { color: "#0f4f22", fillColor: "#43b05c" };
+      if (cls === "round-training") return { color: "#101418", fillColor: "#9aa1a8" };
+      return { color: "#9f2f22", fillColor: "#d96852" };
+    }
+
+    function makePrintTileLayer() {
+      if (activeBaseLayer === "satellite") {
+        return L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+          maxZoom: 19,
+          attribution: "Tiles &copy; Esri"
+        });
+      }
+      return L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 20,
+        attribution: "&copy; OpenStreetMap contributors"
+      });
+    }
+
+    function buildPrintCardMap() {
+      if (!els.printCardMap) return;
+
+      // Make the print map a real fixed-height box before Leaflet measures it.
+      // This avoids blank previews on mobile browsers and Android print/PDF.
+      els.printCardMap.style.display = "block";
+      els.printCardMap.style.height = "6.3in";
+      els.printCardMap.style.minHeight = "6.3in";
+      els.printCardMap.style.width = "100%";
+
+      if (printMapInstance) {
+        try { printMapInstance.remove(); } catch (err) { console.warn(err); }
+        printMapInstance = null;
+      }
+      els.printCardMap.innerHTML = "";
+      if (els.printCardMap._leaflet_id) delete els.printCardMap._leaflet_id;
+
+      printMapInstance = L.map("printCardMap", {
+        zoomControl: false,
+        dragging: false,
+        touchZoom: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        boxZoom: false,
+        keyboard: false,
+        preferCanvas: true,
+        attributionControl: true
+      });
+
+      printBaseLayer = makePrintTileLayer().addTo(printMapInstance);
+      L.control.scale({ imperial: false, metric: true, maxWidth: 180, position: "bottomleft" }).addTo(printMapInstance);
+      const north = L.control({ position: "topright" });
+      north.onAdd = function() {
+        const div = L.DomUtil.create("div", "print-north-arrow");
+        div.innerHTML = "<div class='arrow'></div><div>N</div>";
+        return div;
+      };
+      north.addTo(printMapInstance);
+
+      let bounds = L.latLngBounds([]);
+      let hasBounds = false;
+      const fallbackBounds = L.latLngBounds([]);
+      let hasFallbackBounds = false;
+
+      function extendPrimary(layerOrLatLng) {
+        try {
+          if (layerOrLatLng.getBounds) bounds.extend(layerOrLatLng.getBounds());
+          else bounds.extend(layerOrLatLng);
+          hasBounds = true;
+        } catch (err) {}
+      }
+      function extendFallback(layerOrLatLng) {
+        try {
+          if (layerOrLatLng.getBounds) fallbackBounds.extend(layerOrLatLng.getBounds());
+          else fallbackBounds.extend(layerOrLatLng);
+          hasFallbackBounds = true;
+        } catch (err) {}
+      }
+
+      if (state.fieldAreaClosed && state.fieldArea.length >= 3) {
+        const latlngs = state.fieldArea.map(p => [p.lat, p.lng]);
+        const poly = L.polygon(latlngs, { color: "#2f7b35", fillColor: "#8fbf72", fillOpacity: 0.13, weight: 3 }).addTo(printMapInstance);
+        extendPrimary(poly);
+      } else if (state.fieldArea.length >= 2) {
+        const latlngs = state.fieldArea.map(p => [p.lat, p.lng]);
+        const line = L.polyline(latlngs, { color: "#2f7b35", weight: 3, dashArray: "9 7" }).addTo(printMapInstance);
+        extendFallback(line);
+      } else if (state.fieldArea.length === 1) {
+        extendFallback([state.fieldArea[0].lat, state.fieldArea[0].lng]);
+      }
+
+      for (const zone of state.noFireZones) {
+        const circle = L.circle([zone.lat, zone.lng], {
+          radius: zone.radius,
+          color: "#b48621",
+          fillColor: "#d6ad55",
+          fillOpacity: 0.16,
+          weight: 2,
+          dashArray: "8 7"
+        }).addTo(printMapInstance);
+        extendFallback(circle);
+      }
+
+      for (const target of state.targets) {
+        const style = getRoundMapStyle(target.roundType);
+        const circle = L.circle([target.lat, target.lng], {
+          radius: target.radius,
+          color: style.color,
+          fillColor: style.fillColor,
+          fillOpacity: 0.24,
+          weight: 3
+        }).addTo(printMapInstance);
+        extendFallback(circle);
+        const shortId = abbreviateTargetId(target.name, state.targets.indexOf(target));
+        L.marker([target.lat, target.lng], {
+          interactive: false,
+          keyboard: false,
+          icon: L.divIcon({
+            className: "print-target-label-marker",
+            html: `<div class="print-target-badge ${getRoundClass(target.roundType)}">${escapeHtml(shortId)}</div>`,
+            iconSize: [0, 0],
+            iconAnchor: [0, 0]
+          })
+        }).addTo(printMapInstance);
+      }
+
+      // Card preview intentionally omits the launcher marker, launcher label, and live-map 300 m launcher ring.
+      // The printable card is for field/target/no-fire context only.
+
+      // Framing rule: finalized field boundary defines the print map, tightly framed with slight context. Without a finalized field, use all map objects.
+      const viewBounds = hasBounds ? bounds : fallbackBounds;
+      const canFit = hasBounds || hasFallbackBounds;
+
+      function applyPrintMapView() {
+        if (!printMapInstance) return;
+        printMapInstance.invalidateSize({ animate: false, pan: false });
+        if (canFit && viewBounds.isValid()) {
+          const printPadding = hasBounds ? [2, 2] : [35, 35];
+          printMapInstance.fitBounds(viewBounds, { padding: printPadding, maxZoom: 19 });
+        } else {
+          printMapInstance.setView(map.getCenter(), map.getZoom());
+        }
+      }
+
+      requestAnimationFrame(applyPrintMapView);
+      setTimeout(applyPrintMapView, 120);
+      setTimeout(applyPrintMapView, 450);
+      setTimeout(applyPrintMapView, 950);
+    }
+
+    function toggleBaseMap() {
+      const nextLayer = activeBaseLayer === "street" ? "satellite" : "street";
+      map.removeLayer(baseLayers[activeBaseLayer]);
+      baseLayers[nextLayer].addTo(map);
+      activeBaseLayer = nextLayer;
+      els.baseMapBtn.textContent = activeBaseLayer === "street" ? "Satellite" : "Street";
+      showToast(activeBaseLayer === "street" ? "Street map enabled" : "Satellite map enabled");
+      refreshMapSize(false);
+    }
+
+    function setMapOnly(active, requestBrowserFullscreen = false) {
+      document.body.classList.toggle("map-only", active);
+      els.fullMapBtn.textContent = active ? "Exit Map" : "Full Map";
+
+      if (active && requestBrowserFullscreen && !document.fullscreenElement && document.getElementById("app").requestFullscreen) {
+        document.getElementById("app").requestFullscreen().catch(() => {});
+      }
+      if (!active && document.fullscreenElement && document.exitFullscreen) {
+        document.exitFullscreen().catch(() => {});
+      }
+
+      refreshMapSize(true);
+      setTimeout(() => refreshMapSize(true), 250);
+    }
+
+    function toggleFullMap() {
+      setMapOnly(!document.body.classList.contains("map-only"), true);
     }
 
     function showCardPreview() {
@@ -1666,11 +2025,20 @@
 
           <section class="mission-box full">
             <h2>How To Call In A Fire Mission</h2>
-            <p>1. Contact the mortar team on the event radio channel.</p>
-            <p>2. Give your callsign, auth code, round type, and round count.</p>
-            <p>3. Wait for staff readback and approval. No approval means no mission.</p>
-            <p>4. Staff may deny, delay, or redirect the mission for safety or game balance.</p>
-            <div class="call-example">Example: â€œGravecaller, this is __________. Fire mission auth __________. BB-350. One round. Over.â€</div>
+            <p><strong>1.</strong> Contact the mortar team on the event radio channel requesting a fire mission.</p>
+            <div class="call-example">“Gravecaller, this is [your callsign], requesting fire mission, over.”</div>
+            <p><strong>2.</strong> When asked, send your fire mission designator, authenticator code, and requested target ID.</p>
+            <div class="call-example">“Gravecaller, authenticator code is [your authenticator code for this fire mission], target A1, over.”</div>
+            <p><strong>3.</strong> Wait for authentication and readback.</p>
+            <div class="call-example">“[Your callsign], authentication approved, fire mission designator [your fire mission], [number of rounds], [round type], [target], confirm, over.”</div>
+            <p><strong>4.</strong> Confirm or make corrections.</p>
+            <div class="call-example">“Gravecaller, confirm, over.” / “Gravecaller, negative, correction follows, over.”</div>
+            <p><strong>5.</strong> Stand by for fire mission accepted and fire mission complete radio calls.</p>
+            <div class="call-example">“[Your callsign], fire mission accepted, stand by.”<br>“[Your callsign], fire mission complete. Out.”</div>
+            <p class="fine"><strong>Note:</strong> Staff may deny or delay fire missions for safety.</p>
+          </section>
+
+          <section class="mission-box full">
             <p class="fine">Generated ${escapeHtml(now)}. Map aid only. Staff final approval required. Not a launch-setting calculator.</p>
           </section>
         </div>
@@ -1678,8 +2046,8 @@
     }
 
     function updatePrintDetails() {
-      if (els.mapAuthMini) els.mapAuthMini.textContent = "";
-      els.fieldSchematic.innerHTML = buildFieldSchematicSvg();
+      if (els.mapAuthMini) els.mapAuthMini.textContent = "MAP CONTEXT";
+      if (els.fieldSchematic) els.fieldSchematic.innerHTML = "";
       els.missionDataPage.innerHTML = buildMissionDataCard();
       els.printDetails.innerHTML = "";
       if (els.printCardDetails) els.printCardDetails.innerHTML = "";
@@ -1690,18 +2058,31 @@
       document.body.classList.remove("print-map");
       document.body.classList.add("card-preview");
       els.printCardPage.setAttribute("aria-hidden", "false");
+      if (els.printCardMap) {
+        els.printCardMap.style.display = "block";
+        els.printCardMap.style.height = "6.3in";
+        els.printCardMap.style.minHeight = "6.3in";
+      }
+      requestAnimationFrame(() => requestAnimationFrame(() => buildPrintCardMap()));
     }
 
     function exitCardPreview() {
       document.body.classList.remove("card-preview");
       els.printCardPage.setAttribute("aria-hidden", "true");
+      if (printMapInstance) {
+        printMapInstance.remove();
+        printMapInstance = null;
+      }
       refreshMapSize(true);
     }
 
     function printCardNow() {
       if (!document.body.classList.contains("card-preview")) showCardPreview();
       updatePrintDetails();
-      setTimeout(() => window.print(), 100);
+      setTimeout(() => {
+        buildPrintCardMap();
+        setTimeout(() => window.print(), 700);
+      }, 50);
     }
 
     function printMap() {
@@ -1835,12 +2216,106 @@
         { enableHighAccuracy: true, timeout: 9000, maximumAge: 5000 }
       );
     }
+    function setSearchMarker(latlng, label = "Search result") {
+      const point = { lat: Number(latlng.lat), lng: Number(latlng.lng) };
+      if (!Number.isFinite(point.lat) || !Number.isFinite(point.lng)) return;
+      if (!state.mapObjects.searchMarker) {
+        state.mapObjects.searchMarker = L.marker([point.lat, point.lng], { icon: searchLocationIcon }).addTo(map);
+      } else {
+        state.mapObjects.searchMarker.setLatLng([point.lat, point.lng]);
+      }
+      state.mapObjects.searchMarker.bindPopup(`<b>${escapeHtml(label)}</b>`).openPopup();
+    }
+
+    function clearSearchMarker() {
+      if (state.mapObjects.searchMarker) {
+        map.removeLayer(state.mapObjects.searchMarker);
+        state.mapObjects.searchMarker = null;
+      }
+      els.locationResults.innerHTML = "";
+      showToast("Search marker cleared");
+    }
+
+    function formatSearchResultName(result) {
+      const name = result.display_name || "Unnamed location";
+      return name.split(",").slice(0, 4).join(",").trim();
+    }
+
+    function renderLocationResults(results) {
+      els.locationResults.innerHTML = "";
+      if (!results.length) {
+        els.locationResults.innerHTML = `<div class="notice">No results found. Try a field name plus city/state.</div>`;
+        return;
+      }
+      for (const result of results) {
+        const lat = Number(result.lat);
+        const lon = Number(result.lon);
+        if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+        const title = formatSearchResultName(result);
+        const item = document.createElement("div");
+        item.className = "list-item";
+        item.innerHTML = `<div><div class="list-title">${escapeHtml(title)}</div><div class="list-meta">${escapeHtml(result.type || result.category || "location")}</div></div><button class="small">Go</button>`;
+        item.querySelector("button").onclick = () => {
+          setSearchMarker({ lat, lng: lon }, title);
+          if (Array.isArray(result.boundingbox) && result.boundingbox.length === 4) {
+            const south = Number(result.boundingbox[0]);
+            const north = Number(result.boundingbox[1]);
+            const west = Number(result.boundingbox[2]);
+            const east = Number(result.boundingbox[3]);
+            if ([south, north, west, east].every(Number.isFinite) && south !== north && west !== east) {
+              map.fitBounds([[south, west], [north, east]], { padding: [45, 45], maxZoom: 17 });
+            } else {
+              map.setView([lat, lon], 16);
+            }
+          } else {
+            map.setView([lat, lon], 16);
+          }
+        };
+        els.locationResults.appendChild(item);
+      }
+    }
+
+    async function searchLocation() {
+      const q = els.locationSearch.value.trim();
+      if (!q) return showToast("Enter a field, address, or place name");
+      els.locationSearchBtn.textContent = "Searching...";
+      els.locationSearchBtn.disabled = true;
+      els.locationResults.innerHTML = `<div class="notice">Searching map locations...</div>`;
+      try {
+        const params = new URLSearchParams({
+          format: "jsonv2",
+          q,
+          limit: "7",
+          addressdetails: "1"
+        });
+        const center = map.getCenter();
+        if (center && Number.isFinite(center.lat) && Number.isFinite(center.lng)) {
+          const span = 2.5;
+          params.set("viewbox", `${center.lng - span},${center.lat + span},${center.lng + span},${center.lat - span}`);
+          params.set("bounded", "0");
+        }
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`, {
+          headers: { "Accept": "application/json", "Accept-Language": "en" }
+        });
+        if (!res.ok) throw new Error(`Search failed (${res.status})`);
+        const data = await res.json();
+        renderLocationResults(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.warn(err);
+        els.locationResults.innerHTML = `<div class="notice">Location search failed. Check connection or try a more specific name/address.</div>`;
+        showToast("Location search failed");
+      } finally {
+        els.locationSearchBtn.textContent = "Search Map";
+        els.locationSearchBtn.disabled = false;
+      }
+    }
+
     function showMeOnMap() {
       els.showMeBtn.textContent = "Locating...";
       getPhoneLocation((latlng, accuracy) => {
         setCurrentLocation(latlng, accuracy);
         map.setView([latlng.lat, latlng.lng], 17);
-        showToast(`Current location shown Â±${Math.round(accuracy)} m`);
+        showToast(`Current location shown ±${Math.round(accuracy)} m`);
       }, () => els.showMeBtn.textContent = "Show Me");
     }
     function useGPS() {
@@ -1849,7 +2324,7 @@
         setLauncher(latlng, "gps");
         setCurrentLocation(latlng, accuracy);
         map.setView([latlng.lat, latlng.lng], 17);
-        showToast(`Launcher set from GPS Â±${Math.round(accuracy)} m`);
+        showToast(`Launcher set from GPS ±${Math.round(accuracy)} m`);
       }, () => els.gpsBtn.textContent = "Set Launch GPS");
     }
 
@@ -1873,6 +2348,9 @@
     els.exitPreviewBtn.onclick = exitCardPreview;
     els.saveBtn.onclick = saveState;
     els.exportBtn.onclick = exportCSV;
+    els.locationSearchBtn.onclick = searchLocation;
+    els.clearSearchBtn.onclick = clearSearchMarker;
+    els.locationSearch.addEventListener("keydown", e => { if (e.key === "Enter") searchLocation(); });
     els.applyTargetBtn.onclick = updateActiveTargetFromForm;
     els.centerTargetBtn.onclick = centerOnTarget;
     els.deleteTargetBtn.onclick = deleteActiveTarget;
