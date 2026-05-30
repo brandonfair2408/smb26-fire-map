@@ -198,8 +198,6 @@
 
     .crosshair { width: 20px; height: 20px; border-radius: 999px; background: var(--blue); border: 2px solid white; box-shadow: 0 0 0 2px rgba(112,168,216,.45), 0 0 16px rgba(112,168,216,.8); }
     .current-location-pin { width: 18px; height: 18px; border-radius: 999px; background: #4da3ff; border: 3px solid white; box-shadow: 0 0 0 8px rgba(77,163,255,.22), 0 0 18px rgba(77,163,255,.85); }
-    .search-pin { width: 18px; height: 18px; border-radius: 999px 999px 999px 0; transform: rotate(-45deg); background: #70a8d8; border: 2px solid #fff; box-shadow: 0 0 0 2px rgba(112,168,216,.35), 0 4px 14px rgba(0,0,0,.45); }
-    .search-pin::after { content: ""; position: absolute; width: 6px; height: 6px; border-radius: 50%; left: 4px; top: 4px; background: #fff; }
     .field-vertex-pin { width: 16px; height: 16px; border-radius: 999px; background: #8fbf72; border: 2px solid #f4ffe8; box-shadow: 0 0 0 2px rgba(143,191,114,.35), 0 3px 10px rgba(0,0,0,.45); }
     .target-pin { width: 22px; height: 22px; border-radius: 999px 999px 999px 0; transform: rotate(-45deg); border: 2px solid #fff1e8; box-shadow: 0 0 0 2px rgba(0,0,0,.28), 0 4px 14px rgba(0,0,0,.45); }
     .target-pin::after { content: ""; position: absolute; width: 6px; height: 6px; border-radius: 50%; left: 6px; top: 6px; background: #fff1e8; }
@@ -256,6 +254,64 @@
     .notice { color: var(--muted); font-size: 11px; line-height: 1.35; }
     .toast { position: absolute; left: 50%; bottom: calc(210px + var(--safe-area-bottom)); transform: translateX(-50%); z-index: 30; background: rgba(9,12,8,.9); color: var(--text); border: 1px solid var(--line); border-radius: 999px; padding: 9px 13px; font-size: 12px; box-shadow: 0 14px 28px rgba(0,0,0,.35); pointer-events: none; opacity: 0; transition: opacity .15s ease, transform .15s ease; white-space: nowrap; max-width: calc(100vw - 24px); overflow: hidden; text-overflow: ellipsis; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(-6px); }
+    .location-search {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 11;
+      width: min(430px, calc(100vw - 220px));
+      pointer-events: auto;
+    }
+    .location-search-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 7px;
+      padding: 7px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(17,21,15,.9);
+      box-shadow: 0 10px 25px var(--shadow);
+      backdrop-filter: blur(8px);
+    }
+    .location-search-row input {
+      border-radius: 999px;
+      padding: 8px 11px;
+      font-size: 12px;
+      min-width: 0;
+    }
+    .location-search-row button {
+      padding: 8px 11px;
+      font-size: 12px;
+    }
+    .location-results {
+      display: none;
+      margin-top: 7px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(17,21,15,.94);
+      box-shadow: 0 10px 25px var(--shadow);
+      backdrop-filter: blur(8px);
+      max-height: 240px;
+      overflow: auto;
+    }
+    .location-results.show { display: grid; }
+    .location-result {
+      display: grid;
+      gap: 2px;
+      width: 100%;
+      border: 0;
+      border-bottom: 1px solid rgba(63,76,55,.75);
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      text-align: left;
+      padding: 9px 11px;
+    }
+    .location-result:last-child { border-bottom: 0; }
+    .location-result strong { font-size: 12px; color: var(--text); }
+    .location-result span { font-size: 11px; color: var(--muted); line-height: 1.25; }
+    .search-pin { width: 22px; height: 22px; border-radius: 999px; background: #b8c77b; border: 3px solid #fff; box-shadow: 0 0 0 5px rgba(184,199,123,.25), 0 0 18px rgba(184,199,123,.75); }
 
     @media (min-width: 820px) {
       #app { grid-template-rows: auto 1fr; grid-template-columns: 1fr 390px; }
@@ -263,6 +319,20 @@
       #mapWrap { grid-column: 1; grid-row: 2; }
       #panel { grid-column: 2; grid-row: 2; max-height: none; height: 100%; border-top: 0; border-left: 1px solid var(--line); }
       .toast { bottom: 24px; }
+    }
+
+    @media (max-width: 720px) {
+      .location-search {
+        top: auto;
+        left: 10px;
+        right: 10px;
+        bottom: calc(10px + var(--safe-area-bottom));
+        transform: none;
+        width: auto;
+        z-index: 14;
+      }
+      .location-results { max-height: 180px; }
+      .toast { bottom: calc(78px + var(--safe-area-bottom)); }
     }
 
     @media (max-width: 430px) {
@@ -890,6 +960,13 @@
         <span class="dot warn" id="safetyDot"></span>
         <span id="safetyText">Set launcher and target</span>
       </div>
+      <div class="location-search" id="locationSearchBox">
+        <div class="location-search-row">
+          <input id="locationSearchInput" type="search" placeholder="Search field, park, address..." autocomplete="off" />
+          <button id="locationSearchBtn" class="small">Search</button>
+        </div>
+        <div class="location-results" id="locationSearchResults"></div>
+      </div>
       <div class="toolbox">
         <button id="toolLauncher" class="selected">Set Launcher</button>
         <button id="toolTarget">Add Target</button>
@@ -905,21 +982,21 @@
         <h2>Mission Readout</h2>
         <div class="readout">
           <div class="metric"><div class="label">Range</div><div class="value"><span id="rangeOut">---</span><span class="unit">m</span></div></div>
-          <div class="metric"><div class="label">Azimuth</div><div class="value"><span id="bearingOut">---</span><span class="unit">°T</span></div></div>
+          <div class="metric"><div class="label">Compass Azimuth</div><div class="value"><span id="bearingOut">---</span><span class="unit">°</span></div></div>
           <div class="metric"><div class="label">Hit Radius</div><div class="value"><span id="radiusOut">25</span><span class="unit">m</span></div></div>
         </div>
-        <p class="notice" style="margin: 8px 0 0;">This app is for event coordination, safety checks, and logging only. It does not calculate launch settings.</p>
+        <p class="notice" style="margin: 8px 0 0;">Compass azimuth is what an analog compass should read from the launcher position. Map aid only. It does not calculate launch settings.</p>
       </div>
 
       <div class="card grid">
-        <h3>Find Location</h3>
-        <p class="notice" style="margin:0;">Search for an airsoft field, address, or place name, then jump the map there.</p>
-        <label>Place Search<input id="locationSearch" placeholder="Example: Ballahack Airsoft or 123 Main St" /></label>
-        <div class="button-row">
-          <button id="locationSearchBtn" class="primary">Search Map</button>
-          <button id="clearSearchBtn">Clear Marker</button>
+        <h3>Launcher Weather</h3>
+        <div class="readout">
+          <div class="metric"><div class="label">Wind</div><div class="value"><span id="weatherWindOut">---</span><span class="unit">mph</span></div></div>
+          <div class="metric"><div class="label">From</div><div class="value"><span id="weatherDirectionOut">---</span><span class="unit">°</span></div></div>
+          <div class="metric"><div class="label">Gust</div><div class="value"><span id="weatherGustOut">---</span><span class="unit">mph</span></div></div>
         </div>
-        <div id="locationResults" class="list"></div>
+        <p class="notice" id="weatherStatus" style="margin:0;">Set launcher to fetch wind at the launch position.</p>
+        <div class="button-row"><button id="refreshWeatherBtn">Refresh Wind / Compass</button></div>
       </div>
 
       <div class="card grid">
@@ -1044,6 +1121,8 @@
     const state = {
       tool: "launcher",
       launcher: null,
+      launcherWeather: null,
+      launcherDeclination: null,
       currentLocation: null,
       fieldArea: [],
       fieldAreaClosed: false,
@@ -1076,19 +1155,23 @@
       exitPreviewBtn: document.getElementById("exitPreviewBtn"),
       saveBtn: document.getElementById("saveBtn"),
       exportBtn: document.getElementById("exportBtn"),
-      locationSearch: document.getElementById("locationSearch"),
-      locationSearchBtn: document.getElementById("locationSearchBtn"),
-      clearSearchBtn: document.getElementById("clearSearchBtn"),
-      locationResults: document.getElementById("locationResults"),
       toolLauncher: document.getElementById("toolLauncher"),
       toolTarget: document.getElementById("toolTarget"),
       toolNoFire: document.getElementById("toolNoFire"),
       toolField: document.getElementById("toolField"),
       safetyDot: document.getElementById("safetyDot"),
       safetyText: document.getElementById("safetyText"),
+      locationSearchInput: document.getElementById("locationSearchInput"),
+      locationSearchBtn: document.getElementById("locationSearchBtn"),
+      locationSearchResults: document.getElementById("locationSearchResults"),
       rangeOut: document.getElementById("rangeOut"),
       bearingOut: document.getElementById("bearingOut"),
       radiusOut: document.getElementById("radiusOut"),
+      weatherWindOut: document.getElementById("weatherWindOut"),
+      weatherDirectionOut: document.getElementById("weatherDirectionOut"),
+      weatherGustOut: document.getElementById("weatherGustOut"),
+      weatherStatus: document.getElementById("weatherStatus"),
+      refreshWeatherBtn: document.getElementById("refreshWeatherBtn"),
       targetName: document.getElementById("targetName"),
       roundType: document.getElementById("roundType"),
       hitRadius: document.getElementById("hitRadius"),
@@ -1123,7 +1206,7 @@
 
     const launcherIcon = L.divIcon({ className: "", html: "<div class='crosshair'></div>", iconSize: [24, 24], iconAnchor: [12, 12] });
     const currentLocationIcon = L.divIcon({ className: "", html: "<div class='current-location-pin'></div>", iconSize: [24, 24], iconAnchor: [12, 12] });
-    const searchLocationIcon = L.divIcon({ className: "", html: "<div class='search-pin'></div>", iconSize: [24, 24], iconAnchor: [12, 22] });
+    const searchLocationIcon = L.divIcon({ className: "", html: "<div class='search-pin'></div>", iconSize: [28, 28], iconAnchor: [14, 14] });
     const fieldVertexIcon = L.divIcon({ className: "", html: "<div class='field-vertex-pin'></div>", iconSize: [22, 22], iconAnchor: [11, 11] });
     function getRoundClass(roundType) {
       const value = String(roundType || "").toLowerCase();
@@ -1207,8 +1290,13 @@
       showToast(messages[tool] || "Tool selected");
     }
 
-    function setLauncher(latlng, source = "manual") {
+    function setLauncher(latlng, source = "manual", options = {}) {
+      const previousLauncher = state.launcher ? { lat: state.launcher.lat, lng: state.launcher.lng } : null;
+      const newLauncher = { lat: latlng.lat, lng: latlng.lng };
+      const launcherMoved = !previousLauncher || distanceMeters(previousLauncher, newLauncher) > 1;
       state.launcher = { lat: latlng.lat, lng: latlng.lng, source, updatedAt: new Date().toISOString() };
+      if (launcherMoved && options.fetchWeather !== false) state.launcherWeather = null;
+      if (launcherMoved && options.fetchDeclination !== false) state.launcherDeclination = null;
       if (!state.mapObjects.launcherMarker) {
         state.mapObjects.launcherMarker = L.marker(latlng, { icon: launcherIcon, draggable: true }).addTo(map);
         state.mapObjects.launcherMarker.on("dragend", () => {
@@ -1219,6 +1307,8 @@
         state.mapObjects.launcherMarker.setLatLng(latlng);
       }
       renderAll();
+      if (options.fetchWeather !== false) fetchLauncherWeather(false);
+      if (options.fetchDeclination !== false) fetchLauncherDeclination(false);
     }
 
     function setCurrentLocation(latlng, accuracy = null) {
@@ -1496,12 +1586,85 @@
       }
     }
 
+    function normalize360(deg) {
+      return ((Number(deg) % 360) + 360) % 360;
+    }
+
+    function hasValidDeclination(declination = state.launcherDeclination) {
+      return declination && !declination.loading && !declination.error && Number.isFinite(declination.declinationDeg);
+    }
+
+    function parseDeclinationCandidate(value) {
+      if (Number.isFinite(value)) return Number(value);
+      if (typeof value !== "string") return null;
+      const text = value.trim().toUpperCase();
+      if (!text) return null;
+      const nums = text.match(/[+-]?\d+(?:\.\d+)?/g);
+      if (!nums || !nums.length) return null;
+      let deg = Math.abs(parseFloat(nums[0]));
+      if (nums.length > 1) deg += Math.abs(parseFloat(nums[1])) / 60;
+      if (nums.length > 2) deg += Math.abs(parseFloat(nums[2])) / 3600;
+      const firstNum = parseFloat(nums[0]);
+      let sign = firstNum < 0 ? -1 : 1;
+      if (text.includes("W")) sign = -1;
+      if (text.includes("E")) sign = 1;
+      const result = sign * deg;
+      return Math.abs(result) <= 180 ? result : null;
+    }
+
+    function extractDeclinationDeg(data) {
+      const seen = new Set();
+      function walk(value, key = "") {
+        if (value == null) return null;
+        if (seen.has(value)) return null;
+        if (typeof value === "object") seen.add(value);
+        const lowerKey = String(key).toLowerCase();
+        const keyLooksRight = lowerKey.includes("declination") || lowerKey === "d" || lowerKey === "dec" || lowerKey === "decl";
+        if (keyLooksRight) {
+          const parsed = parseDeclinationCandidate(value);
+          if (Number.isFinite(parsed)) return parsed;
+        }
+        if (Array.isArray(value)) {
+          for (const item of value) {
+            const found = walk(item, key);
+            if (Number.isFinite(found)) return found;
+          }
+        } else if (typeof value === "object") {
+          for (const [k, v] of Object.entries(value)) {
+            const found = walk(v, k);
+            if (Number.isFinite(found)) return found;
+          }
+        }
+        return null;
+      }
+      return walk(data);
+    }
+
+    function magneticBearingFromTrue(trueBearing, declinationDeg = state.launcherDeclination?.declinationDeg) {
+      if (!Number.isFinite(trueBearing) || !Number.isFinite(declinationDeg)) return null;
+      // NOAA/NCEI uses positive declination east of true north and negative west.
+      // True bearing = magnetic bearing + declination, so compass bearing = true - declination.
+      return normalize360(trueBearing - declinationDeg);
+    }
+
+    function getCompassBearingToTarget() {
+      const target = getActiveTarget();
+      if (!state.launcher || !target || !hasValidDeclination()) return null;
+      return magneticBearingFromTrue(bearingDeg(state.launcher, target));
+    }
+
     function renderReadout() {
       const target = getActiveTarget();
       els.radiusOut.textContent = target ? Math.round(target.radius) : (Number(els.hitRadius.value) || 25);
       if (state.launcher && target) {
         els.rangeOut.textContent = formatMeters(distanceMeters(state.launcher, target));
-        els.bearingOut.textContent = formatBearing(bearingDeg(state.launcher, target));
+        if (hasValidDeclination()) {
+          els.bearingOut.textContent = formatBearing(getCompassBearingToTarget());
+        } else if (state.launcherDeclination && state.launcherDeclination.loading) {
+          els.bearingOut.textContent = "...";
+        } else {
+          els.bearingOut.textContent = "---";
+        }
       } else {
         els.rangeOut.textContent = "---";
         els.bearingOut.textContent = "---";
@@ -1509,6 +1672,152 @@
       const safety = evaluateSafety();
       els.safetyText.textContent = safety.text;
       els.safetyDot.className = `dot ${safety.level}`;
+    }
+
+    function compassFromDegrees(deg) {
+      if (!Number.isFinite(deg)) return "---";
+      const dirs = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
+      return dirs[Math.round((((deg % 360) + 360) % 360) / 22.5) % 16];
+    }
+
+    function hasValidWeather(weather = state.launcherWeather) {
+      return weather && !weather.loading && !weather.error && Number.isFinite(weather.windSpeedMph) && Number.isFinite(weather.windDirectionDeg);
+    }
+
+    function renderWeather() {
+      const weather = state.launcherWeather;
+      if (!state.launcher) {
+        els.weatherWindOut.textContent = "---";
+        els.weatherDirectionOut.textContent = "---";
+        els.weatherGustOut.textContent = "---";
+        els.weatherStatus.textContent = "Set launcher to fetch wind and compass correction at the launch position.";
+        return;
+      }
+      if (!weather) {
+        els.weatherWindOut.textContent = "---";
+        els.weatherDirectionOut.textContent = "---";
+        els.weatherGustOut.textContent = "---";
+        els.weatherStatus.textContent = "Wind or compass correction not fetched yet. Tap Refresh Wind / Compass if it does not load automatically.";
+        return;
+      }
+      if (weather.loading) {
+        els.weatherWindOut.textContent = "...";
+        els.weatherDirectionOut.textContent = "...";
+        els.weatherGustOut.textContent = "...";
+        els.weatherStatus.textContent = "Fetching launcher wind from Open-Meteo...";
+        return;
+      }
+      if (weather.error) {
+        els.weatherWindOut.textContent = "---";
+        els.weatherDirectionOut.textContent = "---";
+        els.weatherGustOut.textContent = "---";
+        els.weatherStatus.textContent = `Weather lookup failed: ${weather.message || "unknown error"}`;
+        return;
+      }
+      const wind = Math.round(weather.windSpeedMph);
+      const dir = Math.round(weather.windDirectionDeg);
+      const gust = Number.isFinite(weather.windGustMph) ? Math.round(weather.windGustMph) : null;
+      const compass = compassFromDegrees(dir);
+      const fetched = weather.fetchedAt ? new Date(weather.fetchedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "unknown time";
+      const modelTime = weather.weatherTime ? ` Model time: ${weather.weatherTime}.` : "";
+      els.weatherWindOut.textContent = String(wind);
+      els.weatherDirectionOut.textContent = `${dir} ${compass}`;
+      els.weatherGustOut.textContent = gust === null ? "---" : String(gust);
+      els.weatherStatus.textContent = hasValidDeclination()
+        ? `Launcher wind fetched ${fetched}. Compass azimuth is corrected for this launcher location.${modelTime}`
+        : `Launcher wind fetched ${fetched}. Compass correction unavailable.${modelTime}`;
+    }
+
+    function formatWeatherForRadio() {
+      const weather = state.launcherWeather;
+      if (!hasValidWeather(weather)) return "not available";
+      const dir = Math.round(weather.windDirectionDeg);
+      const wind = Math.round(weather.windSpeedMph);
+      const gustText = Number.isFinite(weather.windGustMph) ? `, gust ${Math.round(weather.windGustMph)} mph` : "";
+      return `${wind} mph from ${formatBearing(dir)}° ${compassFromDegrees(dir)}${gustText}`;
+    }
+
+    async function fetchLauncherWeather(showFeedback = true) {
+      if (!state.launcher) {
+        if (showFeedback) showToast("Set launcher first");
+        renderWeather();
+        return;
+      }
+      state.launcherWeather = { loading: true, requestedAt: new Date().toISOString() };
+      renderWeather();
+      try {
+        const params = new URLSearchParams({
+          latitude: state.launcher.lat.toFixed(6),
+          longitude: state.launcher.lng.toFixed(6),
+          current: "wind_speed_10m,wind_direction_10m,wind_gusts_10m",
+          wind_speed_unit: "mph",
+          timezone: "auto"
+        });
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params.toString()}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        const current = data.current || {};
+        const weather = {
+          source: "Open-Meteo",
+          fetchedAt: new Date().toISOString(),
+          weatherTime: current.time || "",
+          windSpeedMph: Number(current.wind_speed_10m),
+          windDirectionDeg: Number(current.wind_direction_10m),
+          windGustMph: Number(current.wind_gusts_10m)
+        };
+        if (!Number.isFinite(weather.windSpeedMph) || !Number.isFinite(weather.windDirectionDeg)) throw new Error("missing wind data");
+        state.launcherWeather = weather;
+        renderAll();
+        saveState(false);
+        if (showFeedback) showToast("Launcher wind updated");
+      } catch (err) {
+        console.warn(err);
+        state.launcherWeather = { error: true, message: err.message || "network error", fetchedAt: new Date().toISOString() };
+        renderAll();
+        if (showFeedback) showToast("Weather lookup failed");
+      }
+    }
+
+    async function fetchLauncherDeclination(showFeedback = true) {
+      if (!state.launcher) {
+        if (showFeedback) showToast("Set launcher first");
+        renderAll();
+        return;
+      }
+      state.launcherDeclination = { loading: true, requestedAt: new Date().toISOString() };
+      renderAll();
+      try {
+        const now = new Date();
+        const params = new URLSearchParams({
+          lat1: state.launcher.lat.toFixed(6),
+          lon1: state.launcher.lng.toFixed(6),
+          model: "WMM",
+          startYear: String(now.getFullYear()),
+          startMonth: String(now.getMonth() + 1),
+          startDay: String(now.getDate()),
+          resultFormat: "json",
+          key: "zNEw7"
+        });
+        const response = await fetch(`https://www.ngdc.noaa.gov/geomag-web/calculators/calculateDeclination?${params.toString()}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        const declinationDeg = extractDeclinationDeg(data);
+        if (!Number.isFinite(declinationDeg)) throw new Error("missing declination data");
+        state.launcherDeclination = {
+          source: "NOAA WMM",
+          fetchedAt: new Date().toISOString(),
+          declinationDeg,
+          date: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`
+        };
+        renderAll();
+        saveState(false);
+        if (showFeedback) showToast("Compass azimuth updated");
+      } catch (err) {
+        console.warn(err);
+        state.launcherDeclination = { error: true, message: err.message || "network error", fetchedAt: new Date().toISOString() };
+        renderAll();
+        if (showFeedback) showToast("Compass correction failed");
+      }
     }
 
     function renderLists() {
@@ -1540,7 +1849,7 @@
         for (const entry of [...state.log].reverse()) {
           const item = document.createElement("div");
           item.className = "list-item";
-          item.innerHTML = `<div><div class="list-title">${escapeHtml(entry.targetName)} · ${escapeHtml(entry.roundType)}</div><div class="list-meta">${entry.rangeM} m · ${entry.bearingDeg}°T · ${new Date(entry.time).toLocaleString()}</div></div><button class="small">Copy</button>`;
+          item.innerHTML = `<div><div class="list-title">${escapeHtml(entry.targetName)} · ${escapeHtml(entry.roundType)}</div><div class="list-meta">${entry.rangeM} m · ${entry.bearingDeg !== "" && entry.bearingDeg != null ? entry.bearingDeg : "---"}° compass · ${new Date(entry.time).toLocaleString()}</div></div><button class="small">Copy</button>`;
           item.querySelector("button").onclick = () => copyText(entry.radioCall);
           els.logList.appendChild(item);
         }
@@ -1557,7 +1866,8 @@
       const target = getActiveTarget();
       if (!state.launcher || !target) return "Set launcher and target to generate a radio call.";
       const dist = Math.round(distanceMeters(state.launcher, target));
-      const bear = formatBearing(bearingDeg(state.launcher, target));
+      const compassBearing = getCompassBearingToTarget();
+      const bear = Number.isFinite(compassBearing) ? formatBearing(compassBearing) : "---";
       const safety = evaluateSafety();
       const auth = target.authCode ? target.authCode : "[AUTH/CARD]";
       const desc = target.description ? target.description : "[TARGET DESCRIPTION]";
@@ -1568,8 +1878,9 @@
         `DESCRIPTION: ${desc}`,
         `ROUND: ${target.roundType}`,
         `MAP RANGE: ${dist} meters`,
-        `MAP AZIMUTH: ${bear} degrees true`,
+        `COMPASS AZIMUTH: ${bear} degrees`,
         `LIKELY HIT RADIUS: ${Math.round(target.radius)} meters`,
+        `LAUNCHER WIND: ${formatWeatherForRadio()}`,
         `SAFETY CHECK: ${safety.text}`,
         "STAFF FINAL APPROVAL REQUIRED"
       ].join("\n");
@@ -1586,7 +1897,7 @@
 
       if (state.launcher && target) {
         range = `${Math.round(distanceMeters(state.launcher, target))} m`;
-        azimuth = `${formatBearing(bearingDeg(state.launcher, target))}° true`;
+        azimuth = hasValidDeclination() ? `${formatBearing(getCompassBearingToTarget())}° compass` : "---";
       }
 
       const fieldStatus = state.fieldAreaClosed ? `Field boundary active: ${state.fieldArea.length} points` : "Field boundary: not finalized";
@@ -1604,7 +1915,7 @@
         <p><strong>Round:</strong> ${roundType}</p>
         <p><strong>Auth/Card:</strong> ${auth}</p>
         <p><strong>Map range:</strong> ${range}</p>
-        <p><strong>Map azimuth:</strong> ${azimuth}</p>
+        <p><strong>Compass azimuth:</strong> ${azimuth}</p>
         <p><strong>Likely hit radius:</strong> ${radius}</p>
         <p><strong>Safety:</strong> ${escapeHtml(safety)}</p>
         <p><strong>${escapeHtml(fieldStatus)}</strong></p>
@@ -2089,11 +2400,13 @@
       showCardPreview();
     }
 
-    function renderAll() { renderMapObjects(); renderReadout(); renderLists(); renderFieldInfo(); renderRadioCall(); updatePrintDetails(); }
+    function renderAll() { renderMapObjects(); renderReadout(); renderWeather(); renderLists(); renderFieldInfo(); renderRadioCall(); updatePrintDetails(); }
 
-    function saveState() {
+    function saveState(showMessage = true) {
       const payload = {
         launcher: state.launcher,
+        launcherWeather: state.launcherWeather,
+        launcherDeclination: state.launcherDeclination,
         currentLocation: state.currentLocation,
         fieldArea: state.fieldArea,
         fieldAreaClosed: state.fieldAreaClosed,
@@ -2103,7 +2416,7 @@
         log: state.log
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-      showToast("Saved locally on this device");
+      if (showMessage) showToast("Saved locally on this device");
     }
 
     function loadState() {
@@ -2112,6 +2425,8 @@
         if (!raw) return;
         const data = JSON.parse(raw);
         state.launcher = data.launcher || null;
+        state.launcherWeather = data.launcherWeather || null;
+        state.launcherDeclination = data.launcherDeclination || null;
         state.currentLocation = data.currentLocation || null;
         state.fieldArea = Array.isArray(data.fieldArea) ? data.fieldArea : [];
         state.fieldAreaClosed = Boolean(data.fieldAreaClosed);
@@ -2119,7 +2434,8 @@
         state.activeTargetId = data.activeTargetId || (state.targets[0] && state.targets[0].id) || null;
         state.noFireZones = Array.isArray(data.noFireZones) ? data.noFireZones : [];
         state.log = Array.isArray(data.log) ? data.log : [];
-        if (state.launcher) setLauncher(state.launcher, state.launcher.source || "saved");
+        if (state.launcher) setLauncher(state.launcher, state.launcher.source || "saved", { fetchWeather: false, fetchDeclination: false });
+        if (state.launcher && !hasValidDeclination(state.launcherDeclination)) setTimeout(() => fetchLauncherDeclination(false), 0);
         if (state.currentLocation) setCurrentLocation(state.currentLocation, state.currentLocation.accuracy);
         const target = getActiveTarget();
         if (target) loadTargetIntoForm(target);
@@ -2141,8 +2457,15 @@
         targetLat: target.lat,
         targetLng: target.lng,
         rangeM: Math.round(distanceMeters(state.launcher, target)),
-        bearingDeg: Number(formatBearing(bearingDeg(state.launcher, target))),
+        bearingDeg: Number.isFinite(getCompassBearingToTarget()) ? Number(formatBearing(getCompassBearingToTarget())) : "",
+        trueBearingDeg: Number(formatBearing(bearingDeg(state.launcher, target))),
+        declinationDeg: hasValidDeclination() ? Number(state.launcherDeclination.declinationDeg.toFixed(2)) : "",
         hitRadiusM: Math.round(target.radius),
+        windSpeedMph: hasValidWeather() ? Math.round(state.launcherWeather.windSpeedMph) : "",
+        windDirectionDeg: hasValidWeather() ? Math.round(state.launcherWeather.windDirectionDeg) : "",
+        windDirectionCompass: hasValidWeather() ? compassFromDegrees(state.launcherWeather.windDirectionDeg) : "",
+        windGustMph: hasValidWeather() && Number.isFinite(state.launcherWeather.windGustMph) ? Math.round(state.launcherWeather.windGustMph) : "",
+        windFetchedAt: hasValidWeather() ? state.launcherWeather.fetchedAt : "",
         safety: safety.text,
         radioCall: buildRadioCall()
       };
@@ -2153,8 +2476,8 @@
     }
 
     function exportCSV() {
-      const rows = [["time", "target", "round_type", "auth_code", "range_m", "azimuth_true", "hit_radius_m", "safety", "launcher_lat", "launcher_lng", "target_lat", "target_lng", "description"]];
-      for (const e of state.log) rows.push([e.time, e.targetName, e.roundType, e.authCode, e.rangeM, e.bearingDeg, e.hitRadiusM, e.safety, e.launcherLat, e.launcherLng, e.targetLat, e.targetLng, e.description]);
+      const rows = [["time", "target", "round_type", "auth_code", "range_m", "azimuth_compass", "azimuth_true", "declination_deg", "hit_radius_m", "wind_mph", "wind_from_deg", "wind_from_compass", "wind_gust_mph", "wind_fetched_at", "safety", "launcher_lat", "launcher_lng", "target_lat", "target_lng", "description"]];
+      for (const e of state.log) rows.push([e.time, e.targetName, e.roundType, e.authCode, e.rangeM, (e.bearingDeg !== "" && e.bearingDeg != null) ? e.bearingDeg : "", (e.trueBearingDeg !== "" && e.trueBearingDeg != null) ? e.trueBearingDeg : "", (e.declinationDeg !== "" && e.declinationDeg != null) ? e.declinationDeg : "", e.hitRadiusM, e.windSpeedMph || "", e.windDirectionDeg || "", e.windDirectionCompass || "", e.windGustMph || "", e.windFetchedAt || "", e.safety, e.launcherLat, e.launcherLng, e.targetLat, e.targetLng, e.description]);
       const csv = rows.map(row => row.map(cell => `"${String(cell ?? "").replaceAll('"', '""')}"`).join(",")).join("\n");
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
       const url = URL.createObjectURL(blob);
@@ -2216,100 +2539,6 @@
         { enableHighAccuracy: true, timeout: 9000, maximumAge: 5000 }
       );
     }
-    function setSearchMarker(latlng, label = "Search result") {
-      const point = { lat: Number(latlng.lat), lng: Number(latlng.lng) };
-      if (!Number.isFinite(point.lat) || !Number.isFinite(point.lng)) return;
-      if (!state.mapObjects.searchMarker) {
-        state.mapObjects.searchMarker = L.marker([point.lat, point.lng], { icon: searchLocationIcon }).addTo(map);
-      } else {
-        state.mapObjects.searchMarker.setLatLng([point.lat, point.lng]);
-      }
-      state.mapObjects.searchMarker.bindPopup(`<b>${escapeHtml(label)}</b>`).openPopup();
-    }
-
-    function clearSearchMarker() {
-      if (state.mapObjects.searchMarker) {
-        map.removeLayer(state.mapObjects.searchMarker);
-        state.mapObjects.searchMarker = null;
-      }
-      els.locationResults.innerHTML = "";
-      showToast("Search marker cleared");
-    }
-
-    function formatSearchResultName(result) {
-      const name = result.display_name || "Unnamed location";
-      return name.split(",").slice(0, 4).join(",").trim();
-    }
-
-    function renderLocationResults(results) {
-      els.locationResults.innerHTML = "";
-      if (!results.length) {
-        els.locationResults.innerHTML = `<div class="notice">No results found. Try a field name plus city/state.</div>`;
-        return;
-      }
-      for (const result of results) {
-        const lat = Number(result.lat);
-        const lon = Number(result.lon);
-        if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
-        const title = formatSearchResultName(result);
-        const item = document.createElement("div");
-        item.className = "list-item";
-        item.innerHTML = `<div><div class="list-title">${escapeHtml(title)}</div><div class="list-meta">${escapeHtml(result.type || result.category || "location")}</div></div><button class="small">Go</button>`;
-        item.querySelector("button").onclick = () => {
-          setSearchMarker({ lat, lng: lon }, title);
-          if (Array.isArray(result.boundingbox) && result.boundingbox.length === 4) {
-            const south = Number(result.boundingbox[0]);
-            const north = Number(result.boundingbox[1]);
-            const west = Number(result.boundingbox[2]);
-            const east = Number(result.boundingbox[3]);
-            if ([south, north, west, east].every(Number.isFinite) && south !== north && west !== east) {
-              map.fitBounds([[south, west], [north, east]], { padding: [45, 45], maxZoom: 17 });
-            } else {
-              map.setView([lat, lon], 16);
-            }
-          } else {
-            map.setView([lat, lon], 16);
-          }
-        };
-        els.locationResults.appendChild(item);
-      }
-    }
-
-    async function searchLocation() {
-      const q = els.locationSearch.value.trim();
-      if (!q) return showToast("Enter a field, address, or place name");
-      els.locationSearchBtn.textContent = "Searching...";
-      els.locationSearchBtn.disabled = true;
-      els.locationResults.innerHTML = `<div class="notice">Searching map locations...</div>`;
-      try {
-        const params = new URLSearchParams({
-          format: "jsonv2",
-          q,
-          limit: "7",
-          addressdetails: "1"
-        });
-        const center = map.getCenter();
-        if (center && Number.isFinite(center.lat) && Number.isFinite(center.lng)) {
-          const span = 2.5;
-          params.set("viewbox", `${center.lng - span},${center.lat + span},${center.lng + span},${center.lat - span}`);
-          params.set("bounded", "0");
-        }
-        const res = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`, {
-          headers: { "Accept": "application/json", "Accept-Language": "en" }
-        });
-        if (!res.ok) throw new Error(`Search failed (${res.status})`);
-        const data = await res.json();
-        renderLocationResults(Array.isArray(data) ? data : []);
-      } catch (err) {
-        console.warn(err);
-        els.locationResults.innerHTML = `<div class="notice">Location search failed. Check connection or try a more specific name/address.</div>`;
-        showToast("Location search failed");
-      } finally {
-        els.locationSearchBtn.textContent = "Search Map";
-        els.locationSearchBtn.disabled = false;
-      }
-    }
-
     function showMeOnMap() {
       els.showMeBtn.textContent = "Locating...";
       getPhoneLocation((latlng, accuracy) => {
@@ -2328,6 +2557,97 @@
       }, () => els.gpsBtn.textContent = "Set Launch GPS");
     }
 
+    function labelForSearchResult(place) {
+      const name = place.name || place.display_name || "Location";
+      const type = [place.type, place.class].filter(Boolean).join(" · ");
+      return type ? `${name} (${type})` : name;
+    }
+
+    function renderLocationSearchResults(results) {
+      els.locationSearchResults.innerHTML = "";
+      els.locationSearchResults.classList.toggle("show", Boolean(results && results.length));
+      if (!results || !results.length) return;
+      for (const place of results) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "location-result";
+        btn.innerHTML = `<strong>${escapeHtml(labelForSearchResult(place))}</strong><span>${escapeHtml(place.display_name || "")}</span>`;
+        btn.onclick = () => selectLocationResult(place);
+        els.locationSearchResults.appendChild(btn);
+      }
+    }
+
+    function selectLocationResult(place) {
+      const lat = Number(place.lat);
+      const lng = Number(place.lon);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return showToast("Bad location result");
+      const latlng = [lat, lng];
+      const label = labelForSearchResult(place);
+
+      if (!state.mapObjects.searchMarker) {
+        state.mapObjects.searchMarker = L.marker(latlng, { icon: searchLocationIcon }).addTo(map);
+      } else {
+        state.mapObjects.searchMarker.setLatLng(latlng).addTo(map);
+      }
+      state.mapObjects.searchMarker.bindPopup(`<b>${escapeHtml(label)}</b><br>${escapeHtml(place.display_name || "")}`).openPopup();
+
+      const bb = Array.isArray(place.boundingbox) ? place.boundingbox.map(Number) : [];
+      if (bb.length === 4 && bb.every(Number.isFinite)) {
+        const resultBounds = L.latLngBounds([[bb[0], bb[2]], [bb[1], bb[3]]]);
+        map.fitBounds(resultBounds, { padding: [40, 40], maxZoom: 17 });
+      } else {
+        map.setView(latlng, Math.max(map.getZoom(), 16));
+      }
+      renderLocationSearchResults([]);
+      els.locationSearchInput.value = place.display_name || label;
+      showToast("Location found");
+    }
+
+    async function searchLocation() {
+      const query = els.locationSearchInput.value.trim();
+      if (!query) return showToast("Enter a field, place, or address");
+      if (searchLocation._busy) return;
+
+      searchLocation._busy = true;
+      const originalText = els.locationSearchBtn.textContent;
+      els.locationSearchBtn.textContent = "Searching...";
+      renderLocationSearchResults([]);
+
+      try {
+        const params = new URLSearchParams({
+          format: "jsonv2",
+          q: query,
+          limit: "8",
+          addressdetails: "1"
+        });
+        const b = map.getBounds();
+        if (b && b.isValid()) {
+          params.set("viewbox", `${b.getWest()},${b.getNorth()},${b.getEast()},${b.getSouth()}`);
+          params.set("bounded", "0");
+        }
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`, {
+          headers: { "Accept": "application/json" },
+          referrerPolicy: "strict-origin-when-cross-origin"
+        });
+        if (!response.ok) throw new Error(`Search failed: ${response.status}`);
+        const results = await response.json();
+        if (!Array.isArray(results) || !results.length) {
+          renderLocationSearchResults([]);
+          showToast("No location results found");
+          return;
+        }
+        renderLocationSearchResults(results);
+        if (results.length === 1) selectLocationResult(results[0]);
+        else showToast(`${results.length} location results found`);
+      } catch (err) {
+        console.warn(err);
+        showToast("Location search failed");
+      } finally {
+        searchLocation._busy = false;
+        els.locationSearchBtn.textContent = originalText;
+      }
+    }
+
     map.on("click", e => {
       if (state.tool === "launcher") setLauncher(e.latlng, "manual");
       if (state.tool === "target") addTarget(e.latlng);
@@ -2341,6 +2661,14 @@
     els.toolField.onclick = () => setTool("field");
     els.showMeBtn.onclick = showMeOnMap;
     els.gpsBtn.onclick = useGPS;
+    els.locationSearchBtn.onclick = searchLocation;
+    els.locationSearchInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        searchLocation();
+      }
+      if (e.key === "Escape") renderLocationSearchResults([]);
+    });
     els.fullMapBtn.onclick = toggleFullMap;
     els.baseMapBtn.onclick = toggleBaseMap;
     els.printMapBtn.onclick = printMap;
@@ -2348,9 +2676,6 @@
     els.exitPreviewBtn.onclick = exitCardPreview;
     els.saveBtn.onclick = saveState;
     els.exportBtn.onclick = exportCSV;
-    els.locationSearchBtn.onclick = searchLocation;
-    els.clearSearchBtn.onclick = clearSearchMarker;
-    els.locationSearch.addEventListener("keydown", e => { if (e.key === "Enter") searchLocation(); });
     els.applyTargetBtn.onclick = updateActiveTargetFromForm;
     els.centerTargetBtn.onclick = centerOnTarget;
     els.deleteTargetBtn.onclick = deleteActiveTarget;
@@ -2361,6 +2686,7 @@
     els.copyCallBtn.onclick = () => copyText(els.radioCall.value);
     els.logMissionBtn.onclick = logMission;
     els.clearLogBtn.onclick = () => { state.log = []; saveState(); renderAll(); showToast("Mission log cleared"); };
+    els.refreshWeatherBtn.onclick = () => { fetchLauncherWeather(true); fetchLauncherDeclination(false); };
     els.hitRadius.onchange = () => { els.radiusOut.textContent = Number(els.hitRadius.value) || 25; };
 
     function refitMapToData() {
