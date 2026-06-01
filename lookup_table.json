@@ -1,5 +1,8 @@
 {
   "inputLabel": "Input",
   "outputLabel": "Output",
-  "rows": []
+  "rows": [
+    { "input": 190, "output": 50 },
+    { "input": 210, "output": 60 }
+  ]
 }
