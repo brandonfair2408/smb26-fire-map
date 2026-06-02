@@ -2,6 +2,7 @@
   "inputLabel": "Input",
   "outputLabel": "Output",
   "rows": [
+    { "input": 30, "output": 88 },
     { "input": 190, "output": 50 },
     { "input": 210, "output": 60 },
     { "input": 300, "output": 45}
