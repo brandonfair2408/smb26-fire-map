@@ -982,7 +982,7 @@
         <h2>Mission Readout</h2>
         <div class="readout">
           <div class="metric"><div class="label">Range</div><div class="value"><span id="rangeOut">---</span><span class="unit">m</span></div></div>
-          <div class="metric"><div class="label">Compass Azimuth</div><div class="value"><span id="bearingOut">---</span><span class="unit">Â°</span></div></div>
+          <div class="metric"><div class="label">Compass Azimuth</div><div class="value"><span id="bearingOut">---</span><span class="unit">°</span></div></div>
           <div class="metric"><div class="label">Hit Radius</div><div class="value"><span id="radiusOut">25</span><span class="unit">m</span></div></div>
         </div>
         <p class="notice" style="margin: 8px 0 0;">Compass azimuth is what an analog compass should read from the launcher position. Map aid only. It does not calculate launch settings.</p>
@@ -992,7 +992,7 @@
         <h3>Launcher Weather</h3>
         <div class="readout">
           <div class="metric"><div class="label">Wind</div><div class="value"><span id="weatherWindOut">---</span><span class="unit">mph</span></div></div>
-          <div class="metric"><div class="label">From</div><div class="value"><span id="weatherDirectionOut">---</span><span class="unit">Â°</span></div></div>
+          <div class="metric"><div class="label">From</div><div class="value"><span id="weatherDirectionOut">---</span><span class="unit">°</span></div></div>
           <div class="metric"><div class="label">Gust</div><div class="value"><span id="weatherGustOut">---</span><span class="unit">mph</span></div></div>
         </div>
         <p class="notice" id="weatherStatus" style="margin:0;">Set launcher to fetch wind at the launch position.</p>
@@ -1039,7 +1039,7 @@
 
       <div class="card grid">
         <h3>Field Area</h3>
-        <p class="notice" style="margin:0;">Tap â€œDraw Field Areaâ€, then tap the map corners in order. Finish the field to turn on outside-field warnings.</p>
+        <p class="notice" style="margin:0;">Tap “Draw Field Area”, then tap the map corners in order. Finish the field to turn on outside-field warnings.</p>
         <div class="button-row">
           <button id="finishFieldBtn" class="primary">Finish Field</button>
           <button id="undoFieldBtn">Undo Point</button>
@@ -1318,7 +1318,7 @@
       } else {
         state.mapObjects.currentMarker.setLatLng(latlng);
       }
-      const accText = Number.isFinite(accuracy) ? ` Â±${Math.round(accuracy)} m` : "";
+      const accText = Number.isFinite(accuracy) ? ` ±${Math.round(accuracy)} m` : "";
       state.mapObjects.currentMarker.bindPopup(`Current location${accText}`);
       renderAll();
     }
@@ -1734,7 +1734,7 @@
       const dir = Math.round(weather.windDirectionDeg);
       const wind = Math.round(weather.windSpeedMph);
       const gustText = Number.isFinite(weather.windGustMph) ? `, gust ${Math.round(weather.windGustMph)} mph` : "";
-      return `${wind} mph from ${formatBearing(dir)}Â° ${compassFromDegrees(dir)}${gustText}`;
+      return `${wind} mph from ${formatBearing(dir)}° ${compassFromDegrees(dir)}${gustText}`;
     }
 
     async function fetchLauncherWeather(showFeedback = true) {
@@ -1822,12 +1822,12 @@
 
     function renderLists() {
       els.targetList.innerHTML = "";
-      if (!state.targets.length) els.targetList.innerHTML = `<div class="notice">No targets yet. Tap â€œAdd Targetâ€, then tap the map.</div>`;
+      if (!state.targets.length) els.targetList.innerHTML = `<div class="notice">No targets yet. Tap “Add Target”, then tap the map.</div>`;
       else {
         for (const t of state.targets) {
           const item = document.createElement("div");
           item.className = `list-item ${t.id === state.activeTargetId ? "active" : ""}`;
-          item.innerHTML = `<div><div class="list-title">${escapeHtml(t.name)}</div><div class="list-meta">${escapeHtml(t.roundType)} Â· ${Math.round(t.radius)} m radius</div></div><button class="small">Select</button>`;
+          item.innerHTML = `<div><div class="list-title">${escapeHtml(t.name)}</div><div class="list-meta">${escapeHtml(t.roundType)} · ${Math.round(t.radius)} m radius</div></div><button class="small">Select</button>`;
           item.querySelector("button").onclick = () => { state.activeTargetId = t.id; loadTargetIntoForm(t); renderAll(); };
           els.targetList.appendChild(item);
         }
@@ -1849,7 +1849,7 @@
         for (const entry of [...state.log].reverse()) {
           const item = document.createElement("div");
           item.className = "list-item";
-          item.innerHTML = `<div><div class="list-title">${escapeHtml(entry.targetName)} Â· ${escapeHtml(entry.roundType)}</div><div class="list-meta">${entry.rangeM} m Â· ${entry.bearingDeg !== "" && entry.bearingDeg != null ? entry.bearingDeg : "---"}Â° compass Â· ${new Date(entry.time).toLocaleString()}</div></div><button class="small">Copy</button>`;
+          item.innerHTML = `<div><div class="list-title">${escapeHtml(entry.targetName)} · ${escapeHtml(entry.roundType)}</div><div class="list-meta">${entry.rangeM} m · ${entry.bearingDeg !== "" && entry.bearingDeg != null ? entry.bearingDeg : "---"}° compass · ${new Date(entry.time).toLocaleString()}</div></div><button class="small">Copy</button>`;
           item.querySelector("button").onclick = () => copyText(entry.radioCall);
           els.logList.appendChild(item);
         }
@@ -1897,7 +1897,7 @@
 
       if (state.launcher && target) {
         range = `${Math.round(distanceMeters(state.launcher, target))} m`;
-        azimuth = hasValidDeclination() ? `${formatBearing(getCompassBearingToTarget())}Â° compass` : "---";
+        azimuth = hasValidDeclination() ? `${formatBearing(getCompassBearingToTarget())}° compass` : "---";
       }
 
       const fieldStatus = state.fieldAreaClosed ? `Field boundary active: ${state.fieldArea.length} points` : "Field boundary: not finalized";
@@ -2337,15 +2337,15 @@
           <section class="mission-box full">
             <h2>How To Call In A Fire Mission</h2>
             <p><strong>1.</strong> Contact the mortar team on the event radio channel requesting a fire mission.</p>
-            <div class="call-example">â€œGravecaller, this is [your callsign], requesting fire mission, over.â€</div>
+            <div class="call-example">“Gravecaller, this is [your callsign], requesting fire mission, over.”</div>
             <p><strong>2.</strong> When asked, send your fire mission designator, authenticator code, and requested target ID.</p>
-            <div class="call-example">â€œGravecaller, authenticator code is [your authenticator code for this fire mission], target A1, over.â€</div>
+            <div class="call-example">“Gravecaller, authenticator code is [your authenticator code for this fire mission], target A1, over.”</div>
             <p><strong>3.</strong> Wait for authentication and readback.</p>
-            <div class="call-example">â€œ[Your callsign], authentication approved, fire mission designator [your fire mission], [number of rounds], [round type], [target], confirm, over.â€</div>
+            <div class="call-example">“[Your callsign], authentication approved, fire mission designator [your fire mission], [number of rounds], [round type], [target], confirm, over.”</div>
             <p><strong>4.</strong> Confirm or make corrections.</p>
-            <div class="call-example">â€œGravecaller, confirm, over.â€ / â€œGravecaller, negative, correction follows, over.â€</div>
+            <div class="call-example">“Gravecaller, confirm, over.” / “Gravecaller, negative, correction follows, over.”</div>
             <p><strong>5.</strong> Stand by for fire mission accepted and fire mission complete radio calls.</p>
-            <div class="call-example">â€œ[Your callsign], fire mission accepted, stand by.â€<br>â€œ[Your callsign], fire mission complete. Out.â€</div>
+            <div class="call-example">“[Your callsign], fire mission accepted, stand by.”<br>“[Your callsign], fire mission complete. Out.”</div>
             <p class="fine"><strong>Note:</strong> Staff may deny or delay fire missions for safety.</p>
           </section>
 
@@ -2544,7 +2544,7 @@
       getPhoneLocation((latlng, accuracy) => {
         setCurrentLocation(latlng, accuracy);
         map.setView([latlng.lat, latlng.lng], 17);
-        showToast(`Current location shown Â±${Math.round(accuracy)} m`);
+        showToast(`Current location shown ±${Math.round(accuracy)} m`);
       }, () => els.showMeBtn.textContent = "Show Me");
     }
     function useGPS() {
@@ -2553,13 +2553,13 @@
         setLauncher(latlng, "gps");
         setCurrentLocation(latlng, accuracy);
         map.setView([latlng.lat, latlng.lng], 17);
-        showToast(`Launcher set from GPS Â±${Math.round(accuracy)} m`);
+        showToast(`Launcher set from GPS ±${Math.round(accuracy)} m`);
       }, () => els.gpsBtn.textContent = "Set Launch GPS");
     }
 
     function labelForSearchResult(place) {
       const name = place.name || place.display_name || "Location";
-      const type = [place.type, place.class].filter(Boolean).join(" Â· ");
+      const type = [place.type, place.class].filter(Boolean).join(" · ");
       return type ? `${name} (${type})` : name;
     }
 
@@ -2727,4 +2727,4 @@
     });
   </script>
 </body>
-  </html>
+</html>
