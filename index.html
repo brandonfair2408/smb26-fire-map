@@ -287,6 +287,20 @@
     }
     .lookup-preview-row:last-child { border-bottom: 0; }
 
+    .lookup-auto-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .lookup-auto-row input {
+      width: auto;
+      accent-color: var(--accent);
+    }
+
     .toast { position: absolute; left: 50%; bottom: calc(210px + var(--safe-area-bottom)); transform: translateX(-50%); z-index: 30; background: rgba(9,12,8,.9); color: var(--text); border: 1px solid var(--line); border-radius: 999px; padding: 9px 13px; font-size: 12px; box-shadow: 0 14px 28px rgba(0,0,0,.35); pointer-events: none; opacity: 0; transition: opacity .15s ease, transform .15s ease; white-space: nowrap; max-width: calc(100vw - 24px); overflow: hidden; text-overflow: ellipsis; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(-6px); }
     .location-search {
@@ -1039,12 +1053,13 @@
         <h3>Stored Lookup Table</h3>
         <p class="notice" id="lookupStatus" style="margin:0;">Loading lookup_table.json...</p>
         <div class="cols">
-          <label><span id="lookupInputLabel">Input</span><input id="lookupInput" type="number" step="any" placeholder="Enter value" /></label>
+          <label><span id="lookupInputLabel">Input</span><input id="lookupInput" type="number" step="any" placeholder="Set launcher and target" /></label>
           <label><span id="lookupOutputLabel">Output</span><input id="lookupOutput" readonly placeholder="---" /></label>
         </div>
-        <div id="lookupResult" class="lookup-result">Enter a value to interpolate from the stored table.</div>
+        <label class="lookup-auto-row"><input id="lookupAutoRange" type="checkbox" checked /> Auto-fill input from active range</label>
+        <div id="lookupResult" class="lookup-result">Set launcher and active target to interpolate from the stored table.</div>
         <div id="lookupPreview" class="lookup-preview"></div>
-        <div class="button-row"><button id="reloadLookupBtn">Reload Stored Table</button></div>
+        <div class="button-row"><button id="useActiveRangeBtn" class="primary">Use Active Range Now</button><button id="reloadLookupBtn">Reload Stored Table</button></div>
         <p class="notice" style="margin:0;">Loads from lookup_table.json beside index.html. Out-of-range values are not guessed.</p>
       </div>
 
@@ -1180,6 +1195,7 @@
       noFireZones: [],
       log: [],
       lookupTable: { inputLabel: "Input", outputLabel: "Output", rows: [], source: "lookup_table.json", loading: false, error: null },
+      lookupAutoRange: true,
       mapObjects: {
         launcherMarker: null,
         currentMarker: null,
@@ -1224,6 +1240,8 @@
       refreshWeatherBtn: document.getElementById("refreshWeatherBtn"),
       lookupInput: document.getElementById("lookupInput"),
       lookupOutput: document.getElementById("lookupOutput"),
+      lookupAutoRange: document.getElementById("lookupAutoRange"),
+      useActiveRangeBtn: document.getElementById("useActiveRangeBtn"),
       lookupInputLabel: document.getElementById("lookupInputLabel"),
       lookupOutputLabel: document.getElementById("lookupOutputLabel"),
       lookupStatus: document.getElementById("lookupStatus"),
@@ -1715,7 +1733,10 @@
       const target = getActiveTarget();
       els.radiusOut.textContent = target ? Math.round(target.radius) : (Number(els.hitRadius.value) || 25);
       if (state.launcher && target) {
-        els.rangeOut.textContent = formatMeters(distanceMeters(state.launcher, target));
+        const activeRangeMeters = Math.round(distanceMeters(state.launcher, target));
+        els.rangeOut.textContent = formatMeters(activeRangeMeters);
+        els.rangeOut.dataset.meters = String(activeRangeMeters);
+        pushRangeReadoutToLookupInput();
         if (hasValidDeclination()) {
           els.bearingOut.textContent = formatBearing(getCompassBearingToTarget());
         } else if (state.launcherDeclination && state.launcherDeclination.loading) {
@@ -1725,6 +1746,8 @@
         }
       } else {
         els.rangeOut.textContent = "---";
+        delete els.rangeOut.dataset.meters;
+        pushRangeReadoutToLookupInput();
         els.bearingOut.textContent = "---";
       }
       const safety = evaluateSafety();
@@ -1982,10 +2005,83 @@
       return { status: "range", message: "Value could not be placed between table rows." };
     }
 
+    function getRangeMetersFromReadout() {
+      if (!els.rangeOut) return null;
+      const stored = Number(els.rangeOut.dataset.meters);
+      if (Number.isFinite(stored)) return Math.round(stored);
+      const text = String(els.rangeOut.textContent || "").trim().toLowerCase();
+      if (!text || text === "---" || text === "...") return null;
+      if (text.endsWith("k")) {
+        const n = Number(text.slice(0, -1));
+        return Number.isFinite(n) ? Math.round(n * 1000) : null;
+      }
+      const n = Number(text.replace(/[^0-9.+-]/g, ""));
+      return Number.isFinite(n) ? Math.round(n) : null;
+    }
+
+    function getActiveRangeMeters() {
+      const target = getActiveTarget();
+      if (state.launcher && target) return Math.round(distanceMeters(state.launcher, target));
+      return getRangeMetersFromReadout();
+    }
+
+    function isLookupAutoRangeEnabled() {
+      return els.lookupAutoRange ? els.lookupAutoRange.checked : Boolean(state.lookupAutoRange);
+    }
+
+    function pushRangeReadoutToLookupInput() {
+      if (!els.lookupInput || !isLookupAutoRangeEnabled()) return false;
+      const rangeM = getRangeMetersFromReadout();
+      if (!Number.isFinite(rangeM)) {
+        els.lookupInput.value = "";
+        els.lookupInput.placeholder = "Set launcher and target";
+        if (els.lookupOutput) els.lookupOutput.value = "";
+        return false;
+      }
+      const nextValue = String(rangeM);
+      if (els.lookupInput.value !== nextValue) els.lookupInput.value = nextValue;
+      els.lookupInput.placeholder = "Auto range in meters";
+      els.lookupInput.readOnly = true;
+      return true;
+    }
+
+    function setLookupInputToActiveRange(force = false) {
+      if (!els.lookupInput) return false;
+      const rangeM = getActiveRangeMeters();
+      if (!Number.isFinite(rangeM)) {
+        if (force) showToast("Set launcher and active target first");
+        return false;
+      }
+      els.lookupInput.value = String(rangeM);
+      els.lookupInput.placeholder = "Auto range in meters";
+      els.lookupInput.readOnly = isLookupAutoRangeEnabled();
+      return true;
+    }
+
+    function syncLookupInputFromRange() {
+      if (!els.lookupInput) return;
+      const autoEnabled = els.lookupAutoRange ? els.lookupAutoRange.checked : state.lookupAutoRange;
+      state.lookupAutoRange = Boolean(autoEnabled);
+
+      if (!autoEnabled) {
+        els.lookupInput.readOnly = false;
+        els.lookupInput.placeholder = "Enter value";
+        return;
+      }
+
+      els.lookupInput.readOnly = true;
+      if (!pushRangeReadoutToLookupInput() && !setLookupInputToActiveRange(false)) {
+        els.lookupInput.value = "";
+        els.lookupInput.placeholder = "Set launcher and target";
+      }
+    }
+
     function renderLookupTable() {
       if (!els.lookupStatus) return;
       const table = state.lookupTable || { rows: [] };
       const rows = Array.isArray(table.rows) ? table.rows : [];
+
+      syncLookupInputFromRange();
 
       if (els.lookupInputLabel) els.lookupInputLabel.textContent = table.inputLabel || "Input";
       if (els.lookupOutputLabel) els.lookupOutputLabel.textContent = table.outputLabel || "Output";
@@ -2895,8 +2991,24 @@
     els.logMissionBtn.onclick = logMission;
     els.clearLogBtn.onclick = () => { state.log = []; saveState(); renderAll(); showToast("Mission log cleared"); };
     els.refreshWeatherBtn.onclick = () => { fetchLauncherWeather(true); fetchLauncherDeclination(false); };
+    if (els.lookupAutoRange) {
+      els.lookupAutoRange.checked = true;
+      state.lookupAutoRange = true;
+    }
     els.reloadLookupBtn.onclick = () => loadLookupTable(true);
+    if (els.useActiveRangeBtn) {
+      els.useActiveRangeBtn.onclick = () => {
+        if (els.lookupAutoRange) els.lookupAutoRange.checked = true;
+        state.lookupAutoRange = true;
+        setLookupInputToActiveRange(true);
+        renderLookupTable();
+      };
+    }
     els.lookupInput.addEventListener("input", renderLookupTable);
+    els.lookupAutoRange.addEventListener("change", () => {
+      state.lookupAutoRange = els.lookupAutoRange.checked;
+      renderLookupTable();
+    });
     els.hitRadius.onchange = () => { els.radiusOut.textContent = Number(els.hitRadius.value) || 25; };
 
     function refitMapToData() {
