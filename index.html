@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- SBM-26 Fire Mission Map patched v33: Mission Readout third card = Interp. Angle from lookup table -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -1032,9 +1033,9 @@
         <div class="readout">
           <div class="metric"><div class="label">Range</div><div class="value"><span id="rangeOut">---</span><span class="unit">m</span></div></div>
           <div class="metric"><div class="label">Compass Azimuth</div><div class="value"><span id="bearingOut">---</span><span class="unit">°</span></div></div>
-          <div class="metric"><div class="label">Hit Radius</div><div class="value"><span id="radiusOut">25</span><span class="unit">m</span></div></div>
+          <div class="metric"><div class="label">Interp. Angle</div><div class="value"><span id="radiusOut">---</span><span class="unit">°</span></div></div>
         </div>
-        <p class="notice" style="margin: 8px 0 0;">Compass azimuth is what an analog compass should read from the launcher position. Map aid only. It does not calculate launch settings.</p>
+        <p class="notice" style="margin: 8px 0 0;">Compass azimuth is what an analog compass should read from the launcher position. Interp. Angle comes from the stored lookup table. Map aid only.</p>
       </div>
 
       <div class="card grid">
@@ -1731,7 +1732,7 @@
 
     function renderReadout() {
       const target = getActiveTarget();
-      els.radiusOut.textContent = target ? Math.round(target.radius) : (Number(els.hitRadius.value) || 25);
+      if (els.radiusOut) els.radiusOut.textContent = "---";
       if (state.launcher && target) {
         const activeRangeMeters = Math.round(distanceMeters(state.launcher, target));
         els.rangeOut.textContent = formatMeters(activeRangeMeters);
@@ -2076,6 +2077,15 @@
       }
     }
 
+    function renderInterpolatedAngleReadout(result) {
+      if (!els.radiusOut) return;
+      if (result && Number.isFinite(result.output)) {
+        els.radiusOut.textContent = formatLookupNumber(result.output);
+      } else {
+        els.radiusOut.textContent = "---";
+      }
+    }
+
     function renderLookupTable() {
       if (!els.lookupStatus) return;
       const table = state.lookupTable || { rows: [] };
@@ -2114,6 +2124,7 @@
       }
 
       const result = interpolateLookupValue(els.lookupInput ? els.lookupInput.value : "");
+      renderInterpolatedAngleReadout(result);
       if (els.lookupOutput) els.lookupOutput.value = Number.isFinite(result.output) ? formatLookupNumber(result.output) : "";
       if (els.lookupResult) {
         if (Number.isFinite(result.output)) {
@@ -2704,6 +2715,16 @@
       showCardPreview();
     }
 
+
+    function forceMissionReadoutInterpAngleLabel() {
+      const node = document.getElementById("radiusOut");
+      const metric = node ? node.closest(".metric") : null;
+      const label = metric ? metric.querySelector(".label") : null;
+      const unit = metric ? metric.querySelector(".unit") : null;
+      if (label) label.textContent = "Interp. Angle";
+      if (unit) unit.textContent = "°";
+    }
+
     function renderAll() { renderMapObjects(); renderReadout(); renderWeather(); renderLookupTable(); renderLists(); renderFieldInfo(); renderRadioCall(); updatePrintDetails(); }
 
     function saveState(showMessage = true) {
@@ -3009,7 +3030,7 @@
       state.lookupAutoRange = els.lookupAutoRange.checked;
       renderLookupTable();
     });
-    els.hitRadius.onchange = () => { els.radiusOut.textContent = Number(els.hitRadius.value) || 25; };
+    els.hitRadius.onchange = () => renderAll();
 
     function refitMapToData() {
       const points = [];
@@ -3028,6 +3049,7 @@
       });
     }
 
+    forceMissionReadoutInterpAngleLabel();
     loadState();
     renderAll();
     loadLookupTable(false);
